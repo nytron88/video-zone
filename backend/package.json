@@ -1,0 +1,40 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "a backend for the video zone application",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nytron88/video-zone.git"
+  },
+  "keywords": [
+    "javascript",
+    "nodejs",
+    "mongodb",
+    "expressjs"
+  ],
+  "author": "Siddhant Jain",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nytron88/video-zone/issues"
+  },
+  "homepage": "https://github.com/nytron88/video-zone#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "canvas": "^3.0.0",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.2",
+    "mongoose-aggregate-paginate-v2": "^1.1.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
