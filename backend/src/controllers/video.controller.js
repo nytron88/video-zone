@@ -2,6 +2,9 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
 import { WatchHistory } from "../models/watchHistory.model.js";
+import { Comment } from "../models/comment.model.js";
+import { Like } from "../models/like.model.js";
+import { Playlist } from "../models/playlist.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -149,7 +152,41 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  //TODO: delete video
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+
+  if (req.user._id.toString() !== video.owner.toString()) {
+    return next(
+      new ApiError(
+        401,
+        "You do not have permission to perform this action on this resource"
+      )
+    );
+  }
+
+  const deletedVideo = await Video.findByIdAndDelete(videoId);
+
+  await WatchHistory.deleteMany({ video: videoId });
+  await Comment.deleteMany({ video: videoId });
+  await Like.deleteMany({ video: videoId });
+  await Playlist.updateMany(
+    { videos: videoId },
+    { $pull: { videos: videoId } }
+  );
+  await deleteFromCloudinary(deletedVideo.videoFile);
+  await deleteFromCloudinary(deletedVideo.thumbnail);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Video deleted successfully", video));
 });
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
