@@ -22,8 +22,11 @@ const validateFields = (rules) =>
           }
         }
       }
-
-      throw new ApiError(400, "Validation error", errors.array());
+      throw new ApiError(
+        400,
+        errors.array()?.[0]?.msg || "Validation Error",
+        errors.array()
+      );
     }
 
     next();

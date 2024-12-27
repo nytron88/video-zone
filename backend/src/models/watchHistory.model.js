@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 
-const watchLogSchema = new Schema(
+const watchHistorySchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -14,4 +14,4 @@ const watchLogSchema = new Schema(
   { timestamps: true }
 );
 
-export const WatchLog = model("WatchLog", watchLogSchema);
+export const WatchHistory = model("WatchHistory", watchHistorySchema);
