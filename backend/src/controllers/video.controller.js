@@ -1,10 +1,10 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
-import { User } from "../models/user.model.js";
 import { WatchHistory } from "../models/watchHistory.model.js";
 import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
 import { Playlist } from "../models/playlist.model.js";
+import { User } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -17,7 +17,82 @@ import {
 
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
-  //TODO: get all videos based on query, sort, pagination
+
+  const pipeline = [];
+
+  if (userId) {
+    if (!isValidObjectId(userId)) {
+      throw new ApiError(400, "Invalid user ID");
+    }
+
+    pipeline.push({
+      $match: {
+        owner: new mongoose.Types.ObjectId(userId),
+      },
+    });
+  }
+
+  if (sortBy && sortType) {
+    pipeline.push({
+      $sort: {
+        [sortBy]: sortType === "asc" ? 1 : -1,
+      },
+    });
+  }
+
+  if (query) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { title: { $regex: query, $options: "i" } },
+          { description: { $regex: query, $options: "i" } },
+        ],
+      },
+    });
+  }
+
+  pipeline.push(
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+        pipeline: [
+          {
+            $project: {
+              password: 0,
+              email: 0,
+              refreshToken: 0,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: "$owner",
+    }
+  );
+
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    customLabels: {
+      docs: "videos",
+      totalDocs: "totalVideos",
+      totalPages: "totalPages",
+      page: "currentPage",
+    },
+  };
+
+  const result = await Video.aggregatePaginate(
+    Video.aggregate(pipeline),
+    options
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result, "Videos retrieved successfully"));
 });
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -123,7 +198,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     videoData[0]._id,
     { $inc: { views: 1 } },
     { new: true }
-  );
+  ).populate("owner", "-password -email -refreshToken");
 
   await WatchHistory.findOneAndUpdate(
     {
@@ -150,7 +225,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid video ID");
   }
 
-  if (!title && !description && !req.file?.thumbnail) {
+  if (!title && !description && !req.file) {
     throw new ApiError(400, "Please provide at least one field to update");
   }
 
@@ -159,8 +234,9 @@ const updateVideo = asyncHandler(async (req, res) => {
   if (title) updates.title = title;
   if (description) updates.description = description;
 
-  if (req.file?.thumbnail) {
+  if (req.file) {
     if (!allowedImageMimeTypes.includes(req.file?.mimetype)) {
+      await fs.unlink(req.file.path);
       throw new ApiError(
         400,
         "Invalid thumbnail file type. Allowed types: JPEG, PNG, WEBP"
@@ -175,6 +251,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     const uploadedThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
 
     if (!uploadedThumbnail) {
+      await fs.unlink(req.file.path);
       throw new ApiError(500, "Error uploading thumbnail");
     }
 
@@ -257,6 +334,133 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     );
 });
 
+const searchVideosAndChannels = asyncHandler(async (req, res) => {
+  const { query, type = "all", page = 1, limit = 10 } = req.query;
+
+  if (!query) {
+    throw new ApiError(400, "Search query is required");
+  }
+
+  if (type !== "all" && type !== "videos" && type !== "channels") {
+    throw new ApiError(400, "Invalid search type");
+  }
+
+  const options = {
+    page: parseInt(page, 10),
+    limit: parseInt(limit, 10),
+    customLabels: {
+      docs: "results",
+      totalDocs: "totalResults",
+      totalPages: "totalPages",
+      page: "currentPage",
+    },
+  };
+
+  let videoResults = { results: [], totalResults: 0, totalPages: 0 };
+  let channelResults = { results: [], totalResults: 0, totalPages: 0 };
+
+  if (type === "videos" || type === "all") {
+    const videoPipeline = [
+      {
+        $match: {
+          $or: [
+            { title: { $regex: query, $options: "i" } },
+            { description: { $regex: query, $options: "i" } },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+        },
+      },
+      { $unwind: "$owner" },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          thumbnail: 1,
+          "owner.username": 1,
+          "owner.avatar": 1,
+          createdAt: 1,
+        },
+      },
+    ];
+
+    videoResults = await Video.aggregatePaginate(
+      Video.aggregate(videoPipeline),
+      options
+    );
+  }
+
+  if (type === "channels" || type === "all") {
+    const channelsPipeline = [
+      {
+        $match: {
+          username: { $regex: query, $options: "i" },
+        },
+      },
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "_id",
+          foreignField: "channel",
+          as: "subscribers",
+        },
+      },
+      {
+        $addFields: {
+          subscribersCount: { $size: "$subscribers" },
+          isSubscribed: {
+            $cond: {
+              if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          avatar: 1,
+          subscribersCount: 1,
+          isSubscribed: 1,
+          fullName: 1,
+        },
+      },
+    ];
+
+    channelResults = await User.aggregatePaginate(
+      User.aggregate(channelsPipeline),
+      options
+    );
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        videos: videoResults.results,
+        totalVideos: videoResults.totalResults,
+        channels: channelResults.results,
+        totalChannels: channelResults.totalResults,
+        pagination: {
+          currentPage: options.page,
+          totalPages: Math.max(
+            videoResults.totalPages,
+            channelResults.totalPages
+          ),
+        },
+      },
+      "Results found"
+    )
+  );
+});
+
 export {
   getAllVideos,
   publishAVideo,
@@ -264,4 +468,5 @@ export {
   updateVideo,
   deleteVideo,
   togglePublishStatus,
+  searchVideosAndChannels,
 };
