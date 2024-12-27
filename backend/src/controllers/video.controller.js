@@ -94,7 +94,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     {
       $lookup: {
         from: "users",
-        localField: "owner._id",
+        localField: "owner",
         foreignField: "_id",
         as: "owner",
         pipeline: [
@@ -113,9 +113,11 @@ const getVideoById = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if (!videoData) {
+  if (!videoData?.length) {
     throw new ApiError(404, "Video not found");
   }
+
+  console.log(videoData);
 
   const video = await Video.findByIdAndUpdate(
     videoData[0]._id,
@@ -123,10 +125,17 @@ const getVideoById = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  await WatchHistory.create({
-    user: req.user._id,
-    video: video._id,
-  });
+  await WatchHistory.findOneAndUpdate(
+    {
+      user: req.user._id,
+      video: video._id,
+    },
+    {},
+    {
+      upsert: true,
+      new: true,
+    }
+  );
 
   return res
     .status(200)
