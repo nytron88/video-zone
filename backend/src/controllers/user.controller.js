@@ -462,10 +462,17 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
           {
             $project: {
               video: 1,
+              _id: 0,
             },
+          },
+          {
+            $unwind: "$video",
           },
         ],
       },
+    },
+    {
+      $unwind: "$watchHistory",
     },
   ]);
 

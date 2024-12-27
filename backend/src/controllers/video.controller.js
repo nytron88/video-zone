@@ -145,7 +145,48 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  //TODO: update video details like title, description, thumbnail
+  const { title, description } = req.body;
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
+
+  if (!title && !description && !req.file?.thumbnail) {
+    throw new ApiError(400, "Please provide at least one field to update");
+  }
+
+  const updates = {};
+
+  if (title) updates.title = title;
+  if (description) updates.description = description;
+
+  if (req.file?.thumbnail) {
+    if (!allowedImageMimeTypes.includes(req.file?.mimetype)) {
+      throw new ApiError(
+        400,
+        "Invalid thumbnail file type. Allowed types: JPEG, PNG, WEBP"
+      );
+    }
+
+    const thumbnailLocalPath = req.file?.path;
+
+    const video = await Video.findById(videoId);
+
+    await deleteFromCloudinary(video.thumbnail);
+    const uploadedThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+
+    if (!uploadedThumbnail) {
+      throw new ApiError(500, "Error uploading thumbnail");
+    }
+
+    updates.thumbnail = uploadedThumbnail.url;
+  }
+
+  const video = await Video.findByIdAndUpdate(videoId, updates, { new: true });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video updated successfully"));
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
