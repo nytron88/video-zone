@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "fs/promises";
 import { validationResult } from "express-validator";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -11,9 +11,9 @@ const validateFields = (rules) =>
       if (req.files) {
         for (const key in req.files) {
           if (Array.isArray(req.files[key])) {
-            req.files[key].forEach((file) => {
+            req.files[key].forEach(async (file) => {
               try {
-                fs.unlinkSync(file.path); // Delete the file
+                await fs.unlink(file.path);
                 console.log(`Deleted file: ${file.path}`);
               } catch (err) {
                 console.error(`Error deleting file: ${file.path}`, err);

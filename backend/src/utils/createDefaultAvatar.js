@@ -1,6 +1,6 @@
 import { createCanvas } from "canvas";
 import { uploadOnCloudinary } from "./cloudinary.js";
-import fs from "fs";
+import fs from "fs/promises";
 
 async function generateAvatar(name, size = 100) {
   const canvas = createCanvas(size, size);
@@ -24,7 +24,7 @@ async function generateAvatar(name, size = 100) {
 
   const filePath = `./public/temp/${Date.now()} ${name}.png`;
 
-  fs.writeFileSync(filePath, canvas.toBuffer());
+  await fs.writeFile(filePath, canvas.toBuffer());
 
   const uploadedFile = await uploadOnCloudinary(filePath);
 
