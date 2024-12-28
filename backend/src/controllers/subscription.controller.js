@@ -45,7 +45,6 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     );
 });
 
-// controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
 
@@ -62,10 +61,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const subscribers = await Subscription.aggregate([
     {
       $match: {
-        $and: [
-          { channel: new mongoose.Types.ObjectId(channelId) },
-          { subscriber: new mongoose.Types.ObjectId(req.user._id) },
-        ],
+        channel: new mongoose.Types.ObjectId(channelId),
       },
     },
     {
@@ -88,7 +84,9 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: "$subscribers",
+      $project: {
+        channel: 0,
+      },
     },
   ]);
 
