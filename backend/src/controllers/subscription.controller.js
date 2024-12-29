@@ -69,7 +69,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         from: "users",
         localField: "subscriber",
         foreignField: "_id",
-        as: "subscribers",
+        as: "subscriberDetails",
         pipeline: [
           {
             $project: {
@@ -84,21 +84,20 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
       },
     },
     {
-      $project: {
-        subscribers: 1,
-        _id: 0,
-      },
+      $unwind: "$subscriberDetails",
+    },
+    {
+      $replaceRoot: { newRoot: "$subscriberDetails" },
     },
   ]);
 
   res
     .status(200)
     .json(
-      new ApiResponse(200, subscribers, "Subscribers fetched successfully")
+      new ApiResponse(200, { subscribers }, "Subscribers fetched successfully")
     );
 });
 
-// controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
 
@@ -123,7 +122,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         from: "users",
         localField: "channel",
         foreignField: "_id",
-        as: "channels",
+        as: "channelDetails",
         pipeline: [
           {
             $project: {
@@ -138,16 +137,22 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
       },
     },
     {
-      $project: {
-        channels: 1,
-        _id: 0,
-      },
+      $unwind: "$channelDetails",
+    },
+    {
+      $replaceRoot: { newRoot: "$channelDetails" },
     },
   ]);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, channels, "Channels fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { channels },
+        "Subscribed channels fetched successfully"
+      )
+    );
 });
 
 export { toggleSubscription, getUserChannelSubscribers, getSubscribedChannels };

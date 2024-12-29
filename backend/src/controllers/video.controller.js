@@ -148,7 +148,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     description,
     duration: uploadedVideoFile.duration,
     owner: req.user._id,
-  })
+  });
 
   return res
     .status(201)
@@ -446,25 +446,35 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
     );
   }
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        videos: videoResults.results,
-        totalVideos: videoResults.totalResults,
-        channels: channelResults.results,
-        totalChannels: channelResults.totalResults,
-        pagination: {
-          currentPage: options.page,
-          totalPages: Math.max(
-            videoResults.totalPages,
-            channelResults.totalPages
-          ),
-        },
-      },
-      "Results found"
-    )
-  );
+  let statusCode = 200;
+
+  let responseData = {
+    videos: videoResults.totalResults ? videoResults.results : null,
+    totalVideos: videoResults.totalResults || 0,
+    channels: channelResults.totalResults ? channelResults.results : null,
+    totalChannels: channelResults.totalResults || 0,
+    pagination: {
+      currentPage: options.page,
+      totalPages: Math.max(videoResults.totalPages, channelResults.totalPages),
+    },
+  };
+
+  if (!videoResults.totalResults && channelResults.totalResults) {
+    responseData.pagination.totalPages = channelResults.totalPages;
+  } else if (!channelResults.totalResults && videoResults.totalResults) {
+    responseData.pagination.totalPages = videoResults.totalPages;
+  }
+
+  let message = "Results found";
+  if (!videoResults.totalResults && !channelResults.totalResults) {
+    message = "No results found for the given query";
+    responseData = null;
+    statusCode = 204;
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(statusCode, responseData, message));
 });
 
 export {
