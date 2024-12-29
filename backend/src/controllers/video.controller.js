@@ -70,7 +70,9 @@ const getAllVideos = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: "$owner",
+      $addFields: {
+        owner: { $arrayElemAt: ["$owner", 0] },
+      },
     }
   );
 
@@ -139,16 +141,14 @@ const publishAVideo = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Error uploading files");
   }
 
-  const video = new Video({
+  const video = await Video.create({
     videoFile: uploadedVideoFile.url,
     thumbnail: uploadedThumbnail.url,
     title,
     description,
     duration: uploadedVideoFile.duration,
     owner: req.user._id,
-  });
-
-  await video.save();
+  })
 
   return res
     .status(201)
@@ -186,7 +186,9 @@ const getVideoById = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: "$owner",
+      $addFields: {
+        owner: { $arrayElemAt: ["$owner", 0] },
+      },
     },
   ]);
 
@@ -377,7 +379,11 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
           as: "owner",
         },
       },
-      { $unwind: "$owner" },
+      {
+        $addFields: {
+          owner: { $arrayElemAt: ["$owner", 0] },
+        },
+      },
       {
         $project: {
           title: 1,
