@@ -9,6 +9,8 @@ const router = Router();
 
 router.use(verifyLogin);
 
-router.route("/").get(getUserWatchHistory).delete(deleteVideoFromWatchHistory);
+router.route("/").get(getUserWatchHistory);
+
+router.route("/:videoId").delete(deleteVideoFromWatchHistory);
 
 export default router;
