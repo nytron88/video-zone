@@ -15,6 +15,8 @@ import {
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
 
+// search functionality to search for videos with basic query and pagination,
+// mainly for video display on a channel on the frontend client
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
 
@@ -336,6 +338,8 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     );
 });
 
+// search functionality to search for videos and channels using mongodb Atlas search,
+// mainly for the search bar in the frontend client
 const searchVideosAndChannels = asyncHandler(async (req, res) => {
   const {
     query,
