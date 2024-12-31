@@ -68,7 +68,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid channel ID");
   }
 
-  const channel = await User.findById(channelId, "name email");
+  const channel = await User.findById(channelId, "username email");
 
   if (!channel) {
     throw new ApiError(404, "Channel not found");
@@ -126,7 +126,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
       {
         channel: {
           id: channel._id,
-          name: channel.name,
+          username: channel.username,
           email: channel.email,
         },
         videos: videoResults.videos,

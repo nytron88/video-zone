@@ -16,7 +16,8 @@ import {
 } from "../utils/cloudinary.js";
 
 // search functionality to search for videos with basic query and pagination,
-// mainly for video display on a channel on the frontend client
+// mainly for video display on a channel, simple and lightweigh queries, and userId based search 
+// on the frontend client
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
 
