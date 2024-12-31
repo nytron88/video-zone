@@ -16,7 +16,7 @@ import {
 } from "../utils/cloudinary.js";
 
 // search functionality to search for videos with basic query and pagination,
-// mainly for video display on a channel, simple and lightweigh queries, and userId based search 
+// mainly for video display on a channel, simple and lightweigh queries, and userId based search
 // on the frontend client
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
@@ -165,45 +165,15 @@ const getVideoById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid video ID");
   }
 
-  const videoData = await Video.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(videoId),
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "owner",
-        foreignField: "_id",
-        as: "owner",
-        pipeline: [
-          {
-            $project: {
-              password: 0,
-              email: 0,
-              refreshToken: 0,
-            },
-          },
-        ],
-      },
-    },
-    {
-      $addFields: {
-        owner: { $arrayElemAt: ["$owner", 0] },
-      },
-    },
-  ]);
-
-  if (!videoData?.length) {
-    throw new ApiError(404, "Video not found");
-  }
-
   const video = await Video.findByIdAndUpdate(
-    videoData[0]._id,
+    videoId,
     { $inc: { views: 1 } },
     { new: true }
-  ).populate("owner", "-password -email -refreshToken");
+  );
+
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
 
   await WatchHistory.findOneAndUpdate(
     {
@@ -230,6 +200,19 @@ const updateVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid video ID");
   }
 
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+
+  if (req.user._id.toString() !== video.owner.toString()) {
+    throw new ApiError(
+      401,
+      "You do not have permission to perform this action on this resource"
+    );
+  }
+
   if (!title && !description && !req.file) {
     throw new ApiError(400, "Please provide at least one field to update");
   }
@@ -250,8 +233,6 @@ const updateVideo = asyncHandler(async (req, res) => {
 
     const thumbnailLocalPath = req.file?.path;
 
-    const video = await Video.findById(videoId);
-
     await deleteFromCloudinary(video.thumbnail);
     const uploadedThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
 
@@ -263,11 +244,13 @@ const updateVideo = asyncHandler(async (req, res) => {
     updates.thumbnail = uploadedThumbnail.url;
   }
 
-  const video = await Video.findByIdAndUpdate(videoId, updates, { new: true });
+  const updatedVideo = await Video.findByIdAndUpdate(videoId, updates, {
+    new: true,
+  });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, video, "Video updated successfully"));
+    .json(new ApiResponse(200, updatedVideo, "Video updated successfully"));
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
