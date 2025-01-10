@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "./services/api";
 import { useDispatch } from "react-redux";
+import { refreshToken } from "./store/slices/authSlice";
+import { getCurrentUser } from "./store/slices/userSlice";
+import { Loader, Footer, Header, Error } from "./components";
+import { Outlet } from "react-router-dom";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState([]);
+  const [healthCheckComplete, setHealthCheckComplete] = useState(false);
+  const [userCheckComplete, setUserCheckComplete] = useState(false);
+  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const healthCheck = async () => {
@@ -15,7 +22,7 @@ function App() {
         setError("Healthcheck failed. Server might be down.");
         console.error(error);
       } finally {
-        setLoading(false);
+        setHealthCheckComplete(true);
       }
     };
 
@@ -25,11 +32,46 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const setExistingUser = async () => {
+      const tokenAction = await dispatch(refreshToken());
+      if (tokenAction.error) {
+        console.error(tokenAction.error);
+      }
+
+      const userAction = await dispatch(getCurrentUser());
+
+      if (userAction.error) {
+        console.error(userAction.error);
+      }
+
+      setUserCheckComplete(true);
+    };
+
+    setExistingUser();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (healthCheckComplete && userCheckComplete) {
+      setLoading(false);
+    }
+  }, [healthCheckComplete, userCheckComplete]);
+
+  if (error) {
+    return <Error message={error.message} />;
+  }
 
   return (
     <>
-      <h1>Video Zone App</h1>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <Header />
+          <Outlet />
+          <Footer />
+        </>
+      )}
     </>
   );
 }

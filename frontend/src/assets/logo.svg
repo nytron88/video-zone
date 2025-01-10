@@ -1,0 +1,42 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Container -->
+  <rect x="10" y="10" width="80" height="80" rx="20" fill="#1A1A1A"/>
+  
+  <!-- Gradient Frame -->
+  <path 
+    d="M30,10 H70 A20,20 0 0 1 90,30 V40 Q90,30 90,30 A20,20 0 0 0 70,10 H30 A20,20 0 0 0 10,30 Q10,30 10,40 V30 A20,20 0 0 1 30,10"
+    fill="url(#gradient1)"
+  />
+  <path 
+    d="M90,60 V70 A20,20 0 0 1 70,90 H30 A20,20 0 0 1 10,70 V60 Q10,70 10,70 A20,20 0 0 0 30,90 H70 A20,20 0 0 0 90,70 Q90,70 90,60"
+    fill="url(#gradient2)"
+  />
+  
+  <!-- Play Button -->
+  <path 
+    d="M40,35 L65,50 L40,65 Z" 
+    fill="url(#gradient3)"
+  />
+  
+  <!-- Decorative Dots -->
+  <circle cx="75" cy="65" r="2" fill="url(#gradient1)" />
+  <circle cx="25" cy="35" r="2" fill="url(#gradient2)" />
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="100%" stop-color="#60A5FA" />
+    </linearGradient>
+    
+    <linearGradient id="gradient2" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#F87171" />
+      <stop offset="100%" stop-color="#FF8C71" />
+    </linearGradient>
+    
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#F87171" />
+    </linearGradient>
+  </defs>
+</svg>

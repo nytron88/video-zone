@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../../services/api";
 
 const initialState = {
-  userData: null,
   isAuthenticated: false,
   loading: false,
   error: null,
@@ -53,6 +52,21 @@ export const logout = createAsyncThunk(
   }
 );
 
+export const refreshToken = createAsyncThunk(
+  "auth/refreshToken",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post("/users/refresh-token");
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("Failed to refresh session. Please log in again.");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -61,8 +75,7 @@ const authSlice = createSlice({
       .addCase(register.pending, (state) => {
         state.loading = true;
       })
-      .addCase(register.fulfilled, (state, action) => {
-        state.userData = action.payload;
+      .addCase(register.fulfilled, (state) => {
         state.isAuthenticated = true;
         state.loading = false;
       })
@@ -73,15 +86,13 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.loading = true;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(login.fulfilled, (state) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.userData = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
-        state.userData = null;
         state.error = action.payload;
       })
       .addCase(logout.pending, (state) => {
@@ -89,11 +100,23 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state) => {
         state.isAuthenticated = false;
-        state.userData = null;
+        state.token = null;
         state.loading = false;
       })
       .addCase(logout.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(refreshToken.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(refreshToken.fulfilled, (state) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
         state.error = action.payload;
       });
   },
