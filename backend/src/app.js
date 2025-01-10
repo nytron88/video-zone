@@ -41,4 +41,8 @@ app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/watchHistory", watchHistoryRouter);
 
+import errorHandler from "./middlewares/errorHandler.middleware.js";
+
+app.use(errorHandler);
+
 export default app;

@@ -7,7 +7,6 @@ import {
 } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import generateAvatar from "../utils/createDefaultAvatar.js";
 import fs from "fs/promises";
 import { allowedImageMimeTypes } from "../constants.js";
@@ -37,10 +36,10 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (existedUser) {
-    if (req.files.avatar?.[0]?.path) {
+    if (req.files?.avatar?.[0]?.path) {
       await fs.unlink(req.files.avatar[0].path);
     }
-    if (req.files.coverImage?.[0]?.path) {
+    if (req.files?.coverImage?.[0]?.path) {
       await fs.unlink(req.files.coverImage[0].path);
     }
     throw new ApiError(409, "User with email or username already exists");

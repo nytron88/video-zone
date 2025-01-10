@@ -11,6 +11,12 @@ const registrationValidationRules = [
   body("password")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long."),
+  body("confirmPassword").custom((value, { req }) => {
+    if (value !== req.body.password) {
+      throw new ApiError(400, "Password and confirm password do not match.");
+    }
+    return true;
+  }),
   body("username")
     .isString()
     .trim()
