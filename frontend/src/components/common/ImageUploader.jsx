@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 
-const ImageUploader = ({ label, id, onFileChange }) => {
+function ImageUploader({ label, id, onFileChange, register }) {
   const [preview, setPreview] = useState(null);
 
-  const handleFileChange = (e) => {
+  function handleFileChange(e) {
     const file = e.target.files[0];
     if (file) {
       setPreview(URL.createObjectURL(file));
       if (onFileChange) onFileChange(file);
     }
-  };
+  }
 
-  const handleClear = () => {
+  function handleClear() {
     setPreview(null);
     document.getElementById(id).value = "";
-  };
+  }
 
   return (
     <div className="space-y-2">
@@ -25,7 +25,11 @@ const ImageUploader = ({ label, id, onFileChange }) => {
           accept="image/*"
           className="hidden"
           id={id}
-          onChange={handleFileChange}
+          {...register(id)}
+          onChange={(e) => {
+            handleFileChange(e);
+            register(id).onChange(e);
+          }}
         />
         <label
           htmlFor={id}
@@ -52,6 +56,6 @@ const ImageUploader = ({ label, id, onFileChange }) => {
       )}
     </div>
   );
-};
+}
 
 export default ImageUploader;

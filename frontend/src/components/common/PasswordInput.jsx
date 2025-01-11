@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Input } from "../index";
 
-const PasswordInput = ({
+function PasswordInput({
   label = "Password",
   placeholder = "Enter your password",
   registration,
   error,
   className = "",
-}) => {
+}) {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -37,6 +37,6 @@ const PasswordInput = ({
       {error && <p className="text-red-500 text-sm">{error.message}</p>}
     </div>
   );
-};
+}
 
 export default PasswordInput;

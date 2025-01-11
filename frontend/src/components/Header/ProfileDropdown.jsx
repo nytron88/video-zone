@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-const ProfileDropdown = ({
-  avatar,
-  fullName,
-  username,
-  onLogout,
-  isLoading,
-}) => {
+function ProfileDropdown({ avatar, fullName, username, onLogout, isLoading }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -73,6 +67,6 @@ const ProfileDropdown = ({
       )}
     </div>
   );
-};
+}
 
 export default ProfileDropdown;

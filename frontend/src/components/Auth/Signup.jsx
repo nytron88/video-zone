@@ -20,14 +20,29 @@ function Signup() {
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const submit = async (data) => {
+  const submit = async (formData) => {
+    const data = new FormData();
+
+    data.append("fullname", formData.fullname);
+    data.append("username", formData.username);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    data.append("confirmPassword", formData.confirmPassword);
+
+    if (formData.coverImage?.[0]) {
+      data.append("coverImage", formData.coverImage[0]);
+    }
+    if (formData.avatar?.[0]) {
+      data.append("avatar", formData.avatar[0]);
+    }
+
     const signupAction = await dispatch(signup(data));
 
     if (signup.rejected.match(signupAction)) {
       return;
     }
 
-    const { email, password } = data;
+    const { email, password } = formData;
     const loginAction = await dispatch(login({ email, password }));
 
     if (login.rejected.match(loginAction)) {
@@ -138,8 +153,16 @@ function Signup() {
               })}
               error={errors.confirmPassword}
             />
-            <ImageUploader label="Cover Image (Optional)" id="coverImage" />
-            <ImageUploader label="Profile Picture (Optional)" id="avatar" />
+            <ImageUploader
+              label="Profile Picture (Optional)"
+              id="avatar"
+              register={register}
+            />
+            <ImageUploader
+              label="Cover Image (Optional)"
+              id="coverImage"
+              register={register}
+            />
           </div>
 
           {/* Submit Button */}
