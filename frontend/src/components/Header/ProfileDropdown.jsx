@@ -49,10 +49,10 @@ function ProfileDropdown({ avatar, fullName, username, onLogout }) {
               View your channel
             </Link>
             <Link
-              to={`/profile/${username}`}
-              className="block px-4 py-2 text-sm text-blue-400 hover:bg-gray-700"
+              to={`/edit-profile/${username}`}
+              className="block px-4 py-2 text-sm text-green-400 hover:bg-gray-700"
             >
-              View your Profile
+              Edit your profile
             </Link>
             <button
               onClick={onLogout}
