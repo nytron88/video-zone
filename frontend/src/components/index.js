@@ -8,6 +8,7 @@ import Input from "./Common/Input";
 import Button from "./Common/Button";
 import ImageUploader from "./Common/ImageUploader";
 import AuthLayout from "./Auth/AuthLayout";
+import PasswordInput from "./Common/PasswordInput";
 
 export {
   Login,
@@ -20,4 +21,5 @@ export {
   Button,
   ImageUploader,
   AuthLayout,
+  PasswordInput,
 };

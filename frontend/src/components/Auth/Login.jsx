@@ -1,25 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { login } from "../../store/slices/authSlice";
-import { Input, Button, Loader } from "../index";
+import { login, resetError } from "../../store/slices/authSlice";
+import { Input, Button, Loader, PasswordInput } from "../index";
 
 function Login() {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loading = useSelector((state) => state.auth.loading);
-  const [error, setError] = useState("");
-  console.log(useSelector((state) => state.auth));
+  const { loading, error } = useSelector((state) => state.auth);
 
   const submit = async (data) => {
-    setError("");
-
+    await dispatch(resetError());
     const loginAction = await dispatch(login(data));
 
-    if (loginAction.error) {
-      setError(loginAction.payload.message);
+    if (login.rejected.match(loginAction)) {
       return;
     }
 
@@ -45,22 +45,25 @@ function Login() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(submit)} className="space-y-6">
+        <form onSubmit={handleSubmit(submit)} className="space-y-4">
           <Input
             label="Username or Email Address"
             placeholder="Enter your username or email"
             type="text"
             className="text-gray-100"
             {...register("username", {
-              required: "This field is required",
+              required: "Username or email is required",
             })}
           />
-          <Input
-            label="Password"
-            placeholder="Enter your password"
-            type="password"
-            className="text-gray-100"
-            {...register("password", { required: "Password is required" })}
+          {errors.username && (
+            <p className="text-red-500 text-sm">{errors.username.message}</p>
+          )}
+
+          <PasswordInput
+            registration={register("password", {
+              required: "Password is required",
+            })}
+            error={errors.password}
           />
 
           <Button
@@ -74,7 +77,9 @@ function Login() {
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-center mt-4">
-              <p className="text-red-500 text-sm font-medium">{error}</p>
+              <p className="text-red-500 text-sm font-medium">
+                {error.message}
+              </p>
             </div>
           )}
         </form>

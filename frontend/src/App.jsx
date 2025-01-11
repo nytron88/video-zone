@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "./services/api";
-import { useDispatch } from "react-redux";
-import { refreshToken } from "./store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { refreshToken, logUser, resetError } from "./store/slices/authSlice";
 import { getCurrentUser } from "./store/slices/userSlice";
 import { Loader, Footer, Header, Error } from "./components";
 import { Outlet } from "react-router-dom";
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [healthCheckComplete, setHealthCheckComplete] = useState(false);
-  const [userCheckComplete, setUserCheckComplete] = useState(false);
-  const [error, setError] = useState(null);
+  const [healthCheckError, setHealthCheckError] = useState("");
+  const [healthCheckLoading, setHealthCheckLoading] = useState(true);
+  const [userInitialized, setUserInitialized] = useState(false);
+  const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const healthCheck = async () => {
       try {
+        setHealthCheckLoading(true);
         const response = await apiClient.get("/healthcheck");
         console.log("Healthcheck:", response.data);
       } catch (error) {
-        setError("Healthcheck failed. Server might be down.");
+        setHealthCheckError("Healthcheck failed. Server might be down.");
         console.error(error);
       } finally {
-        setHealthCheckComplete(true);
+        setHealthCheckLoading(false);
       }
     };
 
@@ -34,36 +35,35 @@ function App() {
 
   useEffect(() => {
     const setExistingUser = async () => {
-      const tokenAction = await dispatch(refreshToken());
-      if (tokenAction.error) {
-        console.error(tokenAction.error);
+      if (userInitialized) return;
+
+      try {
+        const profileAction = await dispatch(getCurrentUser());
+
+        if (getCurrentUser.fulfilled.match(profileAction)) {
+          dispatch(logUser());
+        } else if (getCurrentUser.rejected.match(profileAction)) {
+          const refreshAction = await dispatch(refreshToken());
+          if (refreshToken.rejected.match(refreshAction)) {
+            console.error("Failed to refresh token. Logging out.");
+          }
+        }
+      } finally {
+        setUserInitialized(true);
+        dispatch(resetError());
       }
-
-      const userAction = await dispatch(getCurrentUser());
-
-      if (userAction.error) {
-        console.error(userAction.error);
-      }
-
-      setUserCheckComplete(true);
     };
 
     setExistingUser();
-  }, [dispatch]);
+  }, [dispatch, userInitialized]);
 
-  useEffect(() => {
-    if (healthCheckComplete && userCheckComplete) {
-      setLoading(false);
-    }
-  }, [healthCheckComplete, userCheckComplete]);
-
-  if (error) {
-    return <Error message={error.message} />;
+  if (healthCheckError) {
+    return <Error message={healthCheckError} />;
   }
 
   return (
     <>
-      {loading ? (
+      {loading || healthCheckLoading ? (
         <Loader />
       ) : (
         <>

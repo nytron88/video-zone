@@ -1,34 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { login, register as signup } from "../../store/slices/authSlice";
-import { Input, Button, Loader, ImageUploader } from "../index";
+import {
+  login,
+  register as signup,
+  resetError,
+} from "../../store/slices/authSlice";
+import { Input, Button, Loader, ImageUploader, PasswordInput } from "../index";
 
 function Signup() {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loading = useSelector((state) => state.auth.loading);
-  const [error, setError] = useState("");
+  const { loading, error } = useSelector((state) => state.auth);
 
   const submit = async (data) => {
-    setError("");
     const signupAction = await dispatch(signup(data));
 
-    if (signupAction.error) {
-      setError(signupAction.payload.message);
+    if (signup.rejected.match(signupAction)) {
       return;
     }
 
     const { email, password } = data;
     const loginAction = await dispatch(login({ email, password }));
 
-    if (loginAction.error) {
-      setError(loginAction.payload.message);
+    if (login.rejected.match(loginAction)) {
       return;
     }
 
+    dispatch(resetError());
     navigate("/");
   };
 
@@ -62,53 +68,75 @@ function Signup() {
               placeholder="John Doe"
               type="text"
               className="text-gray-100"
-              {...register("fullname", { required: true })}
+              {...register("fullname", {
+                required: "Full name is required.",
+                minLength: {
+                  value: 3,
+                  message: "Full name must be at least 3 characters.",
+                },
+              })}
             />
+            {errors.fullname && (
+              <p className="text-red-500 text-sm">{errors.fullname.message}</p>
+            )}
+
             <Input
               label="Username"
               placeholder="johndoe"
               type="text"
               className="text-gray-100"
               {...register("username", {
-                required: true,
-                pattern: {
-                  value: /^[a-zA-Z0-9_]+$/,
-                  message:
-                    "Username can only contain letters, numbers, and underscores",
+                required: "Username is required.",
+                minLength: {
+                  value: 3,
+                  message: "Username must be at least 3 characters.",
                 },
               })}
             />
+            {errors.username && (
+              <p className="text-red-500 text-sm">{errors.username.message}</p>
+            )}
+
             <Input
               label="Email"
               placeholder="johndoe@example.com"
               type="email"
               className="text-gray-100"
               {...register("email", {
-                required: true,
-                validate: {
-                  matchPattern: (value) =>
-                    /^\w+([.-]?\w+)*@\w+([.-]?\w{2,3})+$/.test(value) ||
-                    "Email address must be a valid address",
+                required: "Email is required.",
+                pattern: {
+                  value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+                  message: "Invalid email format.",
                 },
               })}
             />
-            <Input
-              label="Password"
-              placeholder="Enter your password"
-              type="password"
-              className="text-gray-100"
-              {...register("password", { required: true })}
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
+
+            <PasswordInput
+              registration={register("password", {
+                required: "Password is required.",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters long.",
+                },
+              })}
+              error={errors.password}
             />
           </div>
 
           {/* Column 2 */}
           <div className="space-y-4">
-            <Input
+            <PasswordInput
               label="Confirm Password"
               placeholder="Re-enter your password"
-              type="password"
-              className="text-gray-100"
-              {...register("confirmPassword", { required: true })}
+              registration={register("confirmPassword", {
+                required: "Confirm Password is required.",
+                validate: (value) =>
+                  value === watch("password") || "Passwords do not match.",
+              })}
+              error={errors.confirmPassword}
             />
             <ImageUploader label="Cover Image (Optional)" id="coverImage" />
             <ImageUploader label="Profile Picture (Optional)" id="avatar" />
@@ -122,12 +150,14 @@ function Signup() {
               disabled={loading}
               variant="outline"
             >
-              {loading ? "Creating..." : "Create Account"}
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
 
             {error && (
               <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-center mt-4">
-                <p className="text-red-500 text-sm font-medium">{error}</p>
+                <p className="text-red-500 text-sm font-medium">
+                  {error.message}
+                </p>
               </div>
             )}
           </div>
