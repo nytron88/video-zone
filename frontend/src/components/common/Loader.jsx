@@ -1,6 +1,7 @@
 import React from "react";
 
 function Loader({ className = "" }) {
+  console.log("Loader rendered");
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className={`relative ${className}`}>

@@ -10,7 +10,8 @@ import {
 } from "react-router-dom";
 import { store } from "./store/store.js";
 import { Provider } from "react-redux";
-import { Login, Signup, AuthLayout } from "./components";
+import { AuthLayout } from "./components/index.js";
+import { Login, Signup } from "./pages";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
