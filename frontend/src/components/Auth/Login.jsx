@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { login, resetError } from "../../store/slices/authSlice";
-import { Input, Button, Loader, PasswordInput } from "../index";
+import { Input, Button, PasswordInput } from "../index";
 
 function Login() {
   const {
@@ -25,8 +25,6 @@ function Login() {
 
     navigate("/");
   };
-
-  if (loading) return <Loader />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">

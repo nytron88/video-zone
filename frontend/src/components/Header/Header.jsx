@@ -9,7 +9,6 @@ import SearchBar from "./SearchBar";
 function Header() {
   const authStatus = useSelector((state) => state.auth.isAuthenticated);
   const userData = useSelector((state) => state.user.data);
-  const loading = useSelector((state) => state.user.loading);
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
@@ -53,7 +52,6 @@ function Header() {
               fullName={userData?.data?.fullname}
               username={userData?.data?.username}
               onLogout={handleLogout}
-              isLoading={loading}
             />
           )}
         </div>

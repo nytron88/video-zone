@@ -7,7 +7,7 @@ import {
   register as signup,
   resetError,
 } from "../../store/slices/authSlice";
-import { Input, Button, Loader, ImageUploader, PasswordInput } from "../index";
+import { Input, Button, ImageUploader, PasswordInput } from "../index";
 
 function Signup() {
   const {
@@ -52,8 +52,6 @@ function Signup() {
     dispatch(resetError());
     navigate("/");
   };
-
-  if (loading) return <Loader />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">

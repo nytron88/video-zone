@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../../services/api";
+import { getCurrentUser } from "./userSlice";
 
 const initialState = {
   isAuthenticated: false,
@@ -9,13 +10,14 @@ const initialState = {
 
 export const register = createAsyncThunk(
   "auth/register",
-  async (data, { rejectWithValue }) => {
+  async (data, { dispatch, rejectWithValue }) => {
     try {
       const response = await apiClient.post("/users/register", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      await dispatch(getCurrentUser());
       return response.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -28,9 +30,10 @@ export const register = createAsyncThunk(
 
 export const login = createAsyncThunk(
   "auth/login",
-  async (data, { rejectWithValue }) => {
+  async (data, { dispatch, rejectWithValue }) => {
     try {
       const response = await apiClient.post("/users/login", data);
+      await dispatch(getCurrentUser());
       return response.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -58,9 +61,10 @@ export const logout = createAsyncThunk(
 
 export const refreshToken = createAsyncThunk(
   "auth/refreshToken",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       const response = await apiClient.post("/users/refresh-token");
+      await dispatch(getCurrentUser());
       return response.data;
     } catch (error) {
       if (error.response && error.response.data) {

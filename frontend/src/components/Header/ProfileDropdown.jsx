@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-function ProfileDropdown({ avatar, fullName, username, onLogout, isLoading }) {
+function ProfileDropdown({ avatar, fullName, username, onLogout }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -19,14 +19,6 @@ function ProfileDropdown({ avatar, fullName, username, onLogout, isLoading }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-700 bg-gray-700 animate-pulse">
-        <span className="text-sm text-gray-400">...</span>
-      </div>
-    );
-  }
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -51,10 +43,16 @@ function ProfileDropdown({ avatar, fullName, username, onLogout, isLoading }) {
           </div>
           <div className="border-t border-gray-700">
             <Link
-              to="/channel"
+              to={`/channel/${username}`}
               className="block px-4 py-2 text-sm text-blue-400 hover:bg-gray-700"
             >
               View your channel
+            </Link>
+            <Link
+              to={`/profile/${username}`}
+              className="block px-4 py-2 text-sm text-blue-400 hover:bg-gray-700"
+            >
+              View your Profile
             </Link>
             <button
               onClick={onLogout}
