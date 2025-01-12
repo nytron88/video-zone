@@ -16,13 +16,13 @@ function Login() {
   const { loading, error } = useSelector((state) => state.auth);
 
   const submit = async (data) => {
-    await dispatch(resetError());
     const loginAction = await dispatch(login(data));
 
     if (login.rejected.match(loginAction)) {
       return;
     }
 
+    dispatch(resetError());
     navigate("/");
   };
 

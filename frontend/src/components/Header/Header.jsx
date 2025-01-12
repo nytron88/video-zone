@@ -48,9 +48,9 @@ function Header() {
             </>
           ) : (
             <ProfileDropdown
-              avatar={userData?.data?.avatar}
-              fullName={userData?.data?.fullname}
-              username={userData?.data?.username}
+              avatar={userData?.avatar}
+              fullName={userData?.fullname}
+              username={userData?.username}
               onLogout={handleLogout}
             />
           )}

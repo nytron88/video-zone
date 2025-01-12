@@ -14,11 +14,10 @@ export const getCurrentUser = createAsyncThunk(
       const response = await apiClient.get("/users/profile");
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
     }
   }
 );
@@ -30,11 +29,10 @@ export const changePassword = createAsyncThunk(
       const response = await apiClient.patch("/users/change-password", data);
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
     }
   }
 );
@@ -46,11 +44,11 @@ export const updateAccount = createAsyncThunk(
       const response = await apiClient.patch("/users/update-account", data);
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      console.log(error)
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
     }
   }
 );
@@ -66,11 +64,10 @@ export const updateAvatar = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
     }
   }
 );
@@ -86,11 +83,10 @@ export const updateCover = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
     }
   }
 );
@@ -105,7 +101,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.data = action.payload;
+        state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
@@ -128,7 +124,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateAccount.fulfilled, (state, action) => {
-        state.data = action.payload;
+        state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(updateAccount.rejected, (state, action) => {
@@ -140,7 +136,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateAvatar.fulfilled, (state, action) => {
-        state.data = action.payload;
+        state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(updateAvatar.rejected, (state, action) => {
@@ -152,7 +148,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateCover.fulfilled, (state, action) => {
-        state.data = action.payload;
+        state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(updateCover.rejected, (state, action) => {

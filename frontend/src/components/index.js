@@ -9,6 +9,8 @@ import Button from "./Common/Button";
 import ImageUploader from "./Common/ImageUploader";
 import AuthLayout from "./Auth/AuthLayout";
 import PasswordInput from "./Common/PasswordInput";
+import EditProfile from "./EditProfile/EditProfile";
+import ToastContainer from "./Common/ToastContainer";
 
 export {
   Login,
@@ -22,4 +24,6 @@ export {
   ImageUploader,
   AuthLayout,
   PasswordInput,
+  EditProfile,
+  ToastContainer,
 };
