@@ -6,12 +6,14 @@ import { Loader } from "../index";
 function AuthLayout({ children, authentication = true }) {
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.isAuthenticated);
-  const loading = useSelector((state) => state.auth.loading);
+  const loading = useSelector((state) => state.user.loading);
 
   useEffect(() => {
-    if (authentication && authStatus !== authentication) {
+    if (loading) return;
+
+    if (authentication && !authStatus) {
       navigate("/login");
-    } else if (!authentication && authStatus !== authentication) {
+    } else if (!authentication && authStatus) {
       navigate("/");
     }
   }, [authStatus, navigate, authentication]);
