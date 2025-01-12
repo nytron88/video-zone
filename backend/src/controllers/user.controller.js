@@ -7,7 +7,10 @@ import {
 } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-import generateAvatar from "../utils/createDefaultAvatar.js";
+import {
+  generateAvatar,
+  generateCoverImage,
+} from "../utils/createDefaultImages.js";
 import fs from "fs/promises";
 import { allowedImageMimeTypes } from "../constants.js";
 
@@ -72,11 +75,15 @@ const registerUser = asyncHandler(async (req, res) => {
   } else {
     avatar = await generateAvatar(fullname);
   }
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
-  if (!avatar) {
-    throw new ApiError(400, "Avatar file is required");
+  let coverImage;
+
+  if (coverImageLocalPath) {
+    coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  } else {
+    coverImage = await generateCoverImage();
   }
+
   const user = await User.create({
     fullname,
     avatar: avatar.url,
