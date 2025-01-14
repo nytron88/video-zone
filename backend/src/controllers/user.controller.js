@@ -229,6 +229,17 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
+  if (newPassword === currentPassword) {
+    throw new ApiError(
+      400,
+      "New password cannot be the same as current password"
+    );
+  }
+
+  if (newPassword !== confirmPassword) {
+    throw new ApiError(400, "New password and confirm password do not match");
+  }
+
   const user = await User.findById(req.user?._id);
 
   const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
