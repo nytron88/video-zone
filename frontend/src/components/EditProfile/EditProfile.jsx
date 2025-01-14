@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  Input,
-  Button,
-  Loader,
-  ToastContainer,
-} from "../../components/index.js";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateAccount,
@@ -14,6 +8,14 @@ import {
   updateCover,
 } from "../../store/slices/userSlice.js";
 import { toast } from "react-toastify";
+import {
+  Input,
+  Button,
+  Loader,
+  ToastContainer,
+  CoverImageBanner,
+  AvatarBanner,
+} from "../index.js";
 
 function EditProfile() {
   const dispatch = useDispatch();
@@ -125,13 +127,9 @@ function EditProfile() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-4xl bg-[#111111] rounded-xl shadow-2xl p-4 sm:p-8">
-        {/* Cover Image */}
-        <div className="relative w-full h-40 sm:h-52 bg-[#1a1a1a] rounded-xl mb-4 sm:mb-8 overflow-hidden group">
-          <img
-            src={coverPreview || ""}
-            alt="Cover"
-            className="w-full h-full object-cover"
-          />
+        {/* Cover Image Section */}
+        <div className="relative group">
+          <CoverImageBanner coverPreview={coverPreview} />
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <label
               htmlFor="cover-upload"
@@ -145,19 +143,16 @@ function EditProfile() {
             id="cover-upload"
             accept="image/*"
             className="hidden"
-            {...register("coverImage")}
             onChange={handleCoverChange}
           />
         </div>
+
         <ToastContainer />
-        {/* Profile Info */}
+
+        {/* Profile Info Section */}
         <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <div className="relative group">
-            <img
-              src={avatarPreview || ""}
-              alt="Avatar"
-              className="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-[#1a1a1a] object-cover"
-            />
+            <AvatarBanner avatarPreview={avatarPreview} />
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <label
                 htmlFor="avatar-upload"
@@ -171,7 +166,6 @@ function EditProfile() {
               id="avatar-upload"
               accept="image/*"
               className="hidden"
-              {...register("avatar")}
               onChange={handleAvatarChange}
             />
           </div>
@@ -188,7 +182,7 @@ function EditProfile() {
               to={`/profile`}
               className="block text-center bg-[#4169e1] text-white px-5 py-2 rounded-lg hover:bg-[#3154b3] transition-colors"
             >
-              View Profile
+              View Channel
             </Link>
           </div>
         </div>
@@ -214,7 +208,6 @@ function EditProfile() {
                 className="w-full bg-[#111111] text-white border border-[#2a2a2a] rounded-lg p-2 sm:p-3 focus:outline-none focus:ring-2 focus:ring-[#4169e1] transition-colors"
               />
             </div>
-
             <div className="space-y-2">
               <Input
                 label="Username"
@@ -234,7 +227,6 @@ function EditProfile() {
                 </p>
               )}
             </div>
-
             <div className="space-y-2">
               <Input
                 label="Email Address"

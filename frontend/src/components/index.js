@@ -12,6 +12,8 @@ import PasswordInput from "./Common/PasswordInput";
 import EditProfile from "./EditProfile/EditProfile";
 import ToastContainer from "./Common/ToastContainer";
 import ChangePassword from "./Common/ChangePassword";
+import CoverImageBanner from "./Common/CoverImageBanner";
+import AvatarBanner from "./Common/AvatarBanner";
 
 export {
   Login,
@@ -28,4 +30,6 @@ export {
   EditProfile,
   ToastContainer,
   ChangePassword,
+  CoverImageBanner,
+  AvatarBanner,
 };
