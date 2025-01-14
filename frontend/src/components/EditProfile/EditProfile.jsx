@@ -72,6 +72,7 @@ function EditProfile() {
     if (formData.avatar) {
       data.append("avatar", formData.avatar);
       const resultAction = await dispatch(updateAvatar(data));
+      data.delete("avatar");
       if (updateAvatar.fulfilled.match(resultAction)) {
         toast.success("Avatar updated successfully.");
       } else {
