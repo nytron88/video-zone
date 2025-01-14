@@ -12,7 +12,7 @@ export const getCurrentUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.get("/users/profile");
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -27,7 +27,7 @@ export const changePassword = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await apiClient.patch("/users/change-password", data);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -42,9 +42,9 @@ export const updateAccount = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await apiClient.patch("/users/update-account", data);
-      return response.data;
+      return response.data.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
       }
@@ -62,7 +62,7 @@ export const updateAvatar = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -81,7 +81,7 @@ export const updateCover = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -124,7 +124,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateAccount.fulfilled, (state, action) => {
-        state.data = action.payload.data;
+        state.data = action.payload;
         state.loading = false;
       })
       .addCase(updateAccount.rejected, (state, action) => {
@@ -136,7 +136,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateAvatar.fulfilled, (state, action) => {
-        state.data = action.payload.data;
+        state.data = action.payload;
         state.loading = false;
       })
       .addCase(updateAvatar.rejected, (state, action) => {
@@ -148,7 +148,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateCover.fulfilled, (state, action) => {
-        state.data = action.payload.data;
+        state.data = action.payload;
         state.loading = false;
       })
       .addCase(updateCover.rejected, (state, action) => {
