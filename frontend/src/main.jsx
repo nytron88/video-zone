@@ -11,7 +11,7 @@ import {
 import { store } from "./store/store.js";
 import { Provider } from "react-redux";
 import { AuthLayout } from "./components/index.js";
-import { Login, Signup, Home, EditProfile } from "./pages";
+import { Login, Signup, Home, EditProfile, ChangePassword } from "./pages";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,6 +37,14 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <EditProfile />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="change-password"
+        element={
+          <AuthLayout authentication>
+            <ChangePassword />
           </AuthLayout>
         }
       />

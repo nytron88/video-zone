@@ -11,6 +11,7 @@ import AuthLayout from "./Auth/AuthLayout";
 import PasswordInput from "./Common/PasswordInput";
 import EditProfile from "./EditProfile/EditProfile";
 import ToastContainer from "./Common/ToastContainer";
+import ChangePassword from "./Common/ChangePassword";
 
 export {
   Login,
@@ -26,4 +27,5 @@ export {
   PasswordInput,
   EditProfile,
   ToastContainer,
+  ChangePassword,
 };

@@ -279,7 +279,7 @@ function EditProfile() {
         <div className="mt-4 sm:mt-8 text-center">
           <Link
             to="/change-password"
-            className="text-[#4169e1] hover:text-[#3154b3] text-sm font-medium transition-colors"
+            className="text-[#4169e1] hover:text-[#3154b3] text-lg font-extrabold transition-colors"
           >
             Change Password
           </Link>
