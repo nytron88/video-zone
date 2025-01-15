@@ -16,6 +16,7 @@ import { Login, Signup, Home, EditProfile, ChangePassword } from "./pages";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
+      <Route path="" element={<Home />} />
       <Route
         path="signup"
         element={
@@ -53,11 +54,11 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <Provider store={store}>
       <RouterProvider router={router}>
         <App />
       </RouterProvider>
     </Provider>
-  </StrictMode>
+  // </StrictMode>
 );

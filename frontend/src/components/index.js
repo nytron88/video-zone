@@ -14,6 +14,7 @@ import ToastContainer from "./Common/ToastContainer";
 import ChangePassword from "./Common/ChangePassword";
 import CoverImageBanner from "./Common/CoverImageBanner";
 import AvatarBanner from "./Common/AvatarBanner";
+import VideoDisplay from "./Common/VideoDisplay";
 
 export {
   Login,
@@ -32,4 +33,5 @@ export {
   ChangePassword,
   CoverImageBanner,
   AvatarBanner,
+  VideoDisplay,
 };
