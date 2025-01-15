@@ -9,11 +9,14 @@ import SearchBar from "./SearchBar";
 function Header() {
   const authStatus = useSelector((state) => state.auth.isAuthenticated);
   const userData = useSelector((state) => state.user.data);
+  const loading = useSelector((state) => state.user.loading);
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
     await dispatch(logout());
   };
+
+  if (loading) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/90 backdrop-blur-sm">

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../../services/api";
+import abortControllerSingleton from "../../services/abortControllerSingleton";
 
 const initialState = {
   data: null,
@@ -10,12 +11,34 @@ const initialState = {
 export const getCurrentUser = createAsyncThunk(
   "user/getCurrentUser",
   async (_, { rejectWithValue }) => {
+    const newAbortController = new AbortController();
+    abortControllerSingleton.setController(newAbortController);
+
+    const cachedUser = localStorage.getItem("currentUser");
+    const lastFetch = localStorage.getItem("lastFetchTime");
+    const now = Date.now();
+
+    const cooldownPeriod = 10 * 1000;
+    if (cachedUser && lastFetch && now - lastFetch < cooldownPeriod) {
+      console.log("Using cached user data due to cooldown.");
+      return JSON.parse(cachedUser);
+    }
+
     try {
-      const response = await apiClient.get("/users/profile");
-      return response.data.data;
+      const response = await apiClient.get("/users/profile", {
+        signal: newAbortController.signal,
+      });
+      const userData = response.data.data;
+
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+      localStorage.setItem("lastFetchTime", now);
+
+      return userData;
     } catch (error) {
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data);
+      if (axios.isCancel(error)) {
+        console.log("Request canceled:", error.message);
+      } else {
+        console.error("Failed to fetch user profile:", error);
       }
       return rejectWithValue("An unexpected error occurred. Please try again.");
     }
@@ -44,7 +67,7 @@ export const updateAccount = createAsyncThunk(
       const response = await apiClient.patch("/users/update-account", data);
       return response.data.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
       }

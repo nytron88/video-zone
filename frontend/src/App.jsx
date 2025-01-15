@@ -5,6 +5,7 @@ import { refreshToken, logUser, resetError } from "./store/slices/authSlice";
 import { getCurrentUser } from "./store/slices/userSlice";
 import { Loader, Footer, Header, Error } from "./components";
 import { Outlet } from "react-router-dom";
+import abortControllerSingleton from "./services/abortControllerSingleton";
 
 function App() {
   const [healthCheckError, setHealthCheckError] = useState("");
@@ -55,6 +56,10 @@ function App() {
     };
 
     setExistingUser();
+
+    return () => {
+      abortControllerSingleton.clearController();
+    };
   }, [dispatch, userInitialized]);
 
   if (healthCheckError) {

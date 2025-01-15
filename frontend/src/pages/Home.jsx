@@ -1,11 +1,13 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, VideoDisplay } from "../components";
+import { Button, VideoDisplay, Loader } from "../components";
 
 function Home() {
-  const { data } = useSelector((state) => state.user);
+  const { loading: userLoading } = useSelector((state) => state.user);
   const { isAuthenticated } = useSelector((state) => state.auth);
+
+  if (userLoading) return <Loader />;
 
   return isAuthenticated ? (
     <VideoDisplay />
