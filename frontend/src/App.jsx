@@ -3,8 +3,7 @@ import apiClient from "./services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { refreshToken, logUser, resetError } from "./store/slices/authSlice";
 import { getCurrentUser } from "./store/slices/userSlice";
-import { Loader, Footer, Header, Error } from "./components";
-import { Outlet } from "react-router-dom";
+import { Loader, Footer, Header, Error, Layout } from "./components";
 import abortControllerSingleton from "./services/abortControllerSingleton";
 
 function App() {
@@ -73,7 +72,7 @@ function App() {
       ) : (
         <>
           <Header />
-          <Outlet />
+          <Layout />
           <Footer />
         </>
       )}

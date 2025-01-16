@@ -16,6 +16,7 @@ import CoverImageBanner from "./Common/CoverImageBanner";
 import AvatarBanner from "./Common/AvatarBanner";
 import VideoDisplay from "./VideoDisplay/VideoDisplay";
 import Sidebar from "./Common/Sidebar";
+import Layout from "./Layout/Layout";
 
 export {
   Login,
@@ -36,4 +37,5 @@ export {
   AvatarBanner,
   VideoDisplay,
   Sidebar,
+  Layout,
 };
