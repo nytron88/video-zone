@@ -6,9 +6,7 @@ import VideoCard from "./VideoCard";
 import LoadingSkeleton from "./LoadingSkeleton";
 import { throttle } from "lodash";
 
-const PAGE_SIZE = 12;
-
-function VideoDisplay() {
+function VideoDisplay({ limit = 12, sortBy = "views", sortType = "desc" }) {
   const dispatch = useDispatch();
   const [videos, setVideos] = useState([]);
   const [page, setPage] = useState(1);
@@ -32,9 +30,9 @@ function VideoDisplay() {
       const fetchedVideosData = await dispatch(
         getAllVideos({
           page,
-          limit: PAGE_SIZE,
-          sortBy: "views",
-          sortType: "desc",
+          limit,
+          sortBy,
+          sortType,
         })
       ).unwrap();
 
@@ -62,7 +60,7 @@ function VideoDisplay() {
 
       if (
         !fetchedVideosData.hasNextPage ||
-        fetchedVideosData.videos.length < PAGE_SIZE
+        fetchedVideosData.videos.length < limit
       ) {
         setHasMore(false);
       }
@@ -116,17 +114,13 @@ function VideoDisplay() {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
-        Discover
-      </h1>
-
       {initialLoading ? (
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           role="grid"
           aria-label="Loading videos"
         >
-          {Array.from({ length: PAGE_SIZE }).map((_, index) => (
+          {Array.from({ length: limit }).map((_, index) => (
             <LoadingSkeleton key={`skeleton-${index}`} />
           ))}
         </div>
