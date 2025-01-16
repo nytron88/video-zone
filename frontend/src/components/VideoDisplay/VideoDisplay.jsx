@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
 import { getAllVideos } from "../../store/slices/videoSlice";
 import VideoCard from "./VideoCard";
 import LoadingSkeleton from "./LoadingSkeleton";
+import { throttle } from "lodash";
 
 const PAGE_SIZE = 12;
 
@@ -76,10 +77,12 @@ function VideoDisplay() {
     }
   }, [dispatch, page, hasMore, loading, seenIds]);
 
+  const throttledFetchVideos = throttle(() => {
+    fetchVideos();
+  }, 1000);
+
   useEffect(() => {
-    setTimeout(() => {
-      fetchVideos();
-    }, 1000);
+    throttledFetchVideos();
   }, []);
 
   const LoadingIndicator = () => (

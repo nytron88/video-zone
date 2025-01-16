@@ -36,10 +36,26 @@ const getAllVideos = asyncHandler(async (req, res) => {
   }
 
   if (sortBy && sortType) {
+    const sortFields = sortBy.split(",");
+    const sortTypes = sortType.split(",");
+    const sortCriteria = {};
+
+    if (sortFields.length !== sortTypes.length) {
+      throw new ApiError(400, "Invalid sort options");
+    }
+
+    sortFields.forEach(
+      (field, index) =>
+        (sortCriteria[field.trim()] =
+          sortTypes[index]?.trim() === "asc" ? 1 : -1)
+    );
+
+    if (!sortCriteria.createdAt) {
+      sortCriteria.createdAt = -1;
+    }
+
     pipeline.push({
-      $sort: {
-        [sortBy]: sortType === "asc" ? 1 : -1,
-      },
+      $sort: sortCriteria,
     });
   }
 
