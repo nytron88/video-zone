@@ -125,7 +125,7 @@ function EditProfile() {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-4xl bg-[#111111] rounded-xl shadow-2xl p-4 sm:p-8">
         {/* Cover Image Section */}
         <div className="relative group">

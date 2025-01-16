@@ -115,7 +115,7 @@ function VideoDisplay() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white p-6">
+    <div className="min-h-screen bg-black text-white p-6">
       <h1 className="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
         Discover
       </h1>

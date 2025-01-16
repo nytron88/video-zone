@@ -15,6 +15,7 @@ import ChangePassword from "./Common/ChangePassword";
 import CoverImageBanner from "./Common/CoverImageBanner";
 import AvatarBanner from "./Common/AvatarBanner";
 import VideoDisplay from "./VideoDisplay/VideoDisplay";
+import Sidebar from "./Common/Sidebar";
 
 export {
   Login,
@@ -34,4 +35,5 @@ export {
   CoverImageBanner,
   AvatarBanner,
   VideoDisplay,
+  Sidebar,
 };
