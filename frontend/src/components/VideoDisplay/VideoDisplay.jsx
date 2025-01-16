@@ -15,6 +15,7 @@ function VideoDisplay() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [seenIds] = useState(new Set());
 
   const handleImageLoad = useCallback((videoId) => {
     setVideos((prev) =>
@@ -36,13 +37,27 @@ function VideoDisplay() {
         })
       ).unwrap();
 
-      setVideos((prevVideos) => [
-        ...prevVideos,
-        ...fetchedVideosData.videos.map((video) => ({
-          ...video,
-          loaded: false,
-        })),
-      ]);
+      setVideos((prevVideos) => {
+        const newUniqueVideos = fetchedVideosData.videos
+          .filter((video) => {
+            if (seenIds.has(video._id)) {
+              return false;
+            }
+            seenIds.add(video._id);
+            return true;
+          })
+          .map((video) => ({
+            ...video,
+            loaded: false,
+          }));
+
+        if (newUniqueVideos.length === 0) {
+          setHasMore(false);
+          return prevVideos;
+        }
+
+        return [...prevVideos, ...newUniqueVideos];
+      });
 
       if (
         !fetchedVideosData.hasNextPage ||
@@ -59,16 +74,13 @@ function VideoDisplay() {
       setLoading(false);
       setInitialLoading(false);
     }
-  }, [dispatch, page, hasMore, loading]);
+  }, [dispatch, page, hasMore, loading, seenIds]);
 
   useEffect(() => {
-    fetchVideos();
+    setTimeout(() => {
+      fetchVideos();
+    }, 1000);
   }, []);
-
-  const renderSkeletons = () =>
-    Array.from({ length: PAGE_SIZE }).map((_, index) => (
-      <LoadingSkeleton key={index} />
-    ));
 
   const LoadingIndicator = () => (
     <div className="flex justify-center items-center w-full py-4 col-span-full">
@@ -111,7 +123,9 @@ function VideoDisplay() {
           role="grid"
           aria-label="Loading videos"
         >
-          {renderSkeletons()}
+          {Array.from({ length: PAGE_SIZE }).map((_, index) => (
+            <LoadingSkeleton key={`skeleton-${index}`} />
+          ))}
         </div>
       ) : (
         <InfiniteScroll

@@ -26,7 +26,6 @@ export const getAllVideos = createAsyncThunk(
         url += `?${queryParams}`;
       }
       const response = await apiClient.get(url);
-      console.log(response);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
