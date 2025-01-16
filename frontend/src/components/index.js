@@ -14,7 +14,7 @@ import ToastContainer from "./Common/ToastContainer";
 import ChangePassword from "./Common/ChangePassword";
 import CoverImageBanner from "./Common/CoverImageBanner";
 import AvatarBanner from "./Common/AvatarBanner";
-import VideoDisplay from "./Common/VideoDisplay";
+import VideoDisplay from "./VideoDisplay/VideoDisplay";
 
 export {
   Login,

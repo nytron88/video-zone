@@ -3,7 +3,6 @@ import apiClient from "../../services/api";
 
 const initialState = {
   data: null,
-  searchData: [],
   loading: false,
   error: null,
 };
@@ -27,7 +26,8 @@ export const getAllVideos = createAsyncThunk(
         url += `?${queryParams}`;
       }
       const response = await apiClient.get(url);
-      return response.data.data.videos;
+      console.log(response);
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -160,7 +160,7 @@ const videoSlice = createSlice({
       })
       .addCase(getAllVideos.fulfilled, (state, action) => {
         state.loading = false;
-        state.searchData = [...(state.searchData || []), ...action.payload];
+        state.data = action.payload;
       })
       .addCase(getAllVideos.rejected, (state, action) => {
         state.loading = false;
@@ -230,7 +230,7 @@ const videoSlice = createSlice({
       })
       .addCase(searchVideosAndChannels.fulfilled, (state, action) => {
         state.loading = false;
-        state.searchData = [...(state.searchData || []), ...action.payload];
+        state.data = action.payload;
       })
       .addCase(searchVideosAndChannels.rejected, (state, action) => {
         state.loading = false;
