@@ -12,7 +12,6 @@ const SearchBar = ({
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef(null);
   const [results, setResults] = useState([]);
-  console.log(value)
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -28,8 +27,6 @@ const SearchBar = ({
         setIsOpen(false);
       }
     }, 300);
-
-    console.log("clearing timeout");
 
     return () => clearTimeout(timeout);
   }, [value]);

@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
@@ -11,7 +10,14 @@ import {
 import { store } from "./store/store.js";
 import { Provider } from "react-redux";
 import { AuthLayout } from "./components/index.js";
-import { Login, Signup, Home, EditProfile, ChangePassword } from "./pages";
+import {
+  Login,
+  Signup,
+  Home,
+  EditProfile,
+  ChangePassword,
+  VideoUpload,
+} from "./pages";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -49,16 +55,22 @@ const router = createBrowserRouter(
           </AuthLayout>
         }
       />
+      <Route
+        path="upload"
+        element={
+          <AuthLayout authentication>
+            <VideoUpload />
+          </AuthLayout>
+        }
+      />
     </Route>
   )
 );
 
 createRoot(document.getElementById("root")).render(
-  // <StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router}>
-        <App />
-      </RouterProvider>
-    </Provider>
-  // </StrictMode>
+  <Provider store={store}>
+    <RouterProvider router={router}>
+      <App />
+    </RouterProvider>
+  </Provider>
 );

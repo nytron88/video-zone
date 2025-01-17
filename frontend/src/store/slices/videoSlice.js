@@ -45,6 +45,7 @@ export const publishAVideo = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -169,7 +170,8 @@ const videoSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(publishAVideo.fulfilled, (state) => {
+      .addCase(publishAVideo.fulfilled, (state, action) => {
+        state.data = action.payload;
         state.loading = false;
       })
       .addCase(publishAVideo.rejected, (state, action) => {

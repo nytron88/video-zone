@@ -17,6 +17,7 @@ import AvatarBanner from "./Common/AvatarBanner";
 import VideoDisplay from "./VideoDisplay/VideoDisplay";
 import Sidebar from "./Common/Sidebar";
 import Layout from "./Layout/Layout";
+import VideoUpload from "./VideoUpload/VideoUpload";
 
 export {
   Login,
@@ -38,4 +39,5 @@ export {
   VideoDisplay,
   Sidebar,
   Layout,
+  VideoUpload,
 };

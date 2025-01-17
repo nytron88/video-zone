@@ -60,7 +60,7 @@ function Header() {
             </span>
           </Link>
 
-          <div className="hidden md:block w-[60%] mx-auto">
+          <div className="hidden md:block w-[60%] mx-auto max-w-2xl">
             <SearchBar
               placeholder="Search for videos"
               value={searchQuery}
