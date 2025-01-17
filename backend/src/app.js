@@ -29,6 +29,7 @@ import likeRouter from "./routes/like.routes.js";
 import playlistRouter from "./routes/playlist.routes.js";
 import dashboardRouter from "./routes/dashboard.routes.js";
 import watchHistoryRouter from "./routes/watchHistory.routes.js";
+import uploadRouter from "./routes/upload.routes.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/healthcheck", healthcheckRouter);
@@ -40,6 +41,7 @@ app.use("/api/v1/likes", likeRouter);
 app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/watchHistory", watchHistoryRouter);
+app.use("/api/v1/upload", uploadRouter);
 
 import errorHandler from "./middlewares/errorHandler.middleware.js";
 

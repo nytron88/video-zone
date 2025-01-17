@@ -99,6 +99,8 @@ function VideoUpload() {
         setValue("videoFile", null);
         setValue("thumbnail", null);
         navigate(`/video/${resultAction.payload._id}`);
+      } else {
+        toast.error("Failed to upload video");
       }
     } catch (err) {
       toast.error(error?.message || "Something went wrong!");
