@@ -8,7 +8,7 @@ import abortControllerSingleton from "./services/abortControllerSingleton";
 
 function App() {
   const [healthCheckError, setHealthCheckError] = useState("");
-  const [healthCheckLoading, setHealthCheckLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [userInitialized, setUserInitialized] = useState(false);
   const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -16,14 +16,13 @@ function App() {
   useEffect(() => {
     const healthCheck = async () => {
       try {
-        setHealthCheckLoading(true);
         const response = await apiClient.get("/healthcheck");
         console.log("Healthcheck:", response.data);
       } catch (error) {
         setHealthCheckError("Healthcheck failed. Server might be down.");
         console.error(error);
       } finally {
-        setHealthCheckLoading(false);
+        setInitialLoading(false);
       }
     };
 
@@ -67,7 +66,7 @@ function App() {
 
   return (
     <>
-      {loading || healthCheckLoading ? (
+      {loading || initialLoading ? (
         <Loader />
       ) : (
         <>
