@@ -1,13 +1,22 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   login,
   register as signup,
   resetError,
 } from "../../store/slices/authSlice";
-import { Input, Button, ImageUploader, PasswordInput } from "../index";
+import { updateAvatar, updateCover } from "../../store/slices/userSlice";
+import {
+  Input,
+  Button,
+  ImageUploader,
+  PasswordInput,
+  ToastContainer,
+} from "../index";
+import { toast } from "react-toastify";
+import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
 
 function Signup() {
   const {
@@ -18,35 +27,80 @@ function Signup() {
   } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { startUpload, uploadError } = useCloudinaryUpload();
 
   const submit = async (formData) => {
-    const data = new FormData();
+    const submitData = {
+      fullname: formData.fullname,
+      email: formData.email,
+      username: formData.username,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+    };
 
-    data.append("fullname", formData.fullname);
-    data.append("username", formData.username);
-    data.append("email", formData.email);
-    data.append("password", formData.password);
-    data.append("confirmPassword", formData.confirmPassword);
-
-    if (formData.coverImage?.[0]) {
-      data.append("coverImage", formData.coverImage[0]);
-    }
-    if (formData.avatar?.[0]) {
-      data.append("avatar", formData.avatar[0]);
-    }
-
-    const signupAction = await dispatch(signup(data));
+    const signupAction = await dispatch(signup(submitData));
 
     if (signup.rejected.match(signupAction)) {
+      const errorMessage =
+        signupAction.payload?.message || "An unknown error occurred";
+      toast.error(errorMessage);
       return;
     }
 
-    const { email, password } = formData;
+    const { email, password } = submitData;
     const loginAction = await dispatch(login({ email, password }));
 
     if (login.rejected.match(loginAction)) {
+      const errorMessage =
+        loginAction.payload?.message || "An unknown error occurred";
+      toast.error(errorMessage);
       return;
+    }
+
+    if (formData.avatar?.[0]) {
+      const uploadResponse = await startUpload({
+        file: formData.avatar[0],
+        folder: "avatars",
+        resourceType: "image",
+        metadata: {
+          username: formData.username,
+          email: formData.email,
+          type: formData.avatar[0].type,
+          size: formData.avatar[0].size,
+        },
+      });
+
+      if (uploadError) {
+        toast.error(uploadError.message);
+        return;
+      }
+
+      dispatch(updateAvatar({ avatar: uploadResponse.secure_url }));
+    }
+
+    if (formData.coverImage?.[0]) {
+      const uploadResponse = await startUpload({
+        file: formData.coverImage[0],
+        folder: "coverImages",
+        resourceType: "image",
+        metadata: {
+          username: formData.username,
+          email: formData.email,
+          type: formData.coverImage[0].type,
+          size: formData.coverImage[0].size,
+        },
+      });
+
+      if (uploadError) {
+        toast.error(uploadError.message);
+        return;
+      }
+
+      dispatch(
+        updateCover({
+          coverImage: uploadResponse.secure_url,
+        })
+      );
     }
 
     dispatch(resetError());
@@ -57,6 +111,8 @@ function Signup() {
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl"></div>
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+
+      <ToastContainer />
 
       <div className="max-w-4xl w-full p-8 bg-black/50 backdrop-blur-xl rounded-xl border border-gray-800 shadow-xl">
         {/* Header */}
@@ -165,22 +221,17 @@ function Signup() {
 
           {/* Submit Button */}
           <div className="col-span-1 md:col-span-2">
-            <Button
-              className="w-full"
-              type="submit"
-              disabled={loading}
-              variant="outline"
-            >
-              {loading ? "Creating Account..." : "Create Account"}
+            <Button className="w-full" type="submit" variant="outline">
+              Create Account
             </Button>
-
+            {/* 
             {error && (
               <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-center mt-4">
                 <p className="text-red-500 text-sm font-medium">
                   {error.message}
                 </p>
               </div>
-            )}
+            )} */}
           </div>
         </form>
 

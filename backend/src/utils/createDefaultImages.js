@@ -1,6 +1,5 @@
 import { createCanvas } from "canvas";
 import { uploadOnCloudinary } from "./cloudinary.js";
-import fs from "fs/promises";
 
 async function generateAvatar(name, size = 100) {
   const canvas = createCanvas(size, size);
@@ -22,11 +21,8 @@ async function generateAvatar(name, size = 100) {
   ctx.textBaseline = "middle";
   ctx.fillText(initials, size / 2, size / 2);
 
-  const filePath = `./public/temp/${Date.now()} ${name}.png`;
-
-  await fs.writeFile(filePath, canvas.toBuffer());
-
-  const uploadedFile = await uploadOnCloudinary(filePath);
+  const buffer = canvas.toBuffer();
+  const uploadedFile = await uploadOnCloudinary(buffer);
 
   return uploadedFile;
 }
@@ -43,10 +39,10 @@ async function generateCoverImage(width = 1200, height = 300) {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  const filePath = `./public/temp/${Date.now()}-cover.png`;
-  await fs.writeFile(filePath, canvas.toBuffer());
+  const buffer = canvas.toBuffer();
+  const uploadedFile = await uploadOnCloudinary(buffer);
 
-  const uploadedFile = await uploadOnCloudinary(filePath);
+  console.log(uploadedFile);
 
   return uploadedFile;
 }

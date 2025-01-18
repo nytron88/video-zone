@@ -12,11 +12,7 @@ export const register = createAsyncThunk(
   "auth/register",
   async (data, { dispatch, rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/users/register", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.post("/users/register", data);
       await dispatch(getCurrentUser());
       return response.data;
     } catch (error) {

@@ -11,7 +11,6 @@ import {
   updateUserCoverImage,
   getUserChannelProfile,
 } from "../controllers/user.controller.js";
-import upload from "../middlewares/multer.middleware.js";
 import verifyLogin from "../middlewares/auth.middleware.js";
 import validateFields from "../middlewares/validateFields.middleware.js";
 import {
@@ -22,14 +21,9 @@ import {
 
 const router = Router();
 
-router.route("/register").post(
-  upload.fields([
-    { name: "avatar", maxCount: 1 },
-    { name: "coverImage", maxCount: 1 },
-  ]),
-  validateFields(registrationValidationRules),
-  registerUser
-);
+router
+  .route("/register")
+  .post(validateFields(registrationValidationRules), registerUser);
 
 router.route("/login").post(loginUser);
 
@@ -55,13 +49,9 @@ router
     updateAccountDetails
   );
 
-router
-  .route("/update-avatar")
-  .patch(verifyLogin, upload.single("avatar"), updateUserAvatar);
+router.route("/update-avatar").patch(verifyLogin, updateUserAvatar);
 
-router
-  .route("/update-cover")
-  .patch(verifyLogin, upload.single("coverImage"), updateUserCoverImage);
+router.route("/update-cover").patch(verifyLogin, updateUserCoverImage);
 
 router.route("/channel/:username").get(verifyLogin, getUserChannelProfile);
 

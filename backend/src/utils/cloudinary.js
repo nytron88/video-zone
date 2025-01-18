@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs/promises";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,37 +6,29 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (resource) => {
   try {
-    if (!localFilePath) {
-      return null;
-    }
-    const response = await cloudinary.uploader.upload(localFilePath, {
+    const base64String = `data:image/png;base64,${resource.toString("base64")}`;
+    const response = await cloudinary.uploader.upload(base64String, {
       resource_type: "auto",
     });
-
-    await fs.unlink(localFilePath);
-
     return response;
   } catch (error) {
-    await fs.unlink(localFilePath);
+    console.error("Cloudinary upload error:", error.message);
     return null;
   }
 };
 
 const deleteFromCloudinary = async (url, resourceType = "image") => {
   try {
-    if (!url) {
-      return null;
-    }
-    const resourcePublicId = url.split("/").pop().split(".")[0];
+    const resourcePublicId = url.match(/\/([^/]+)\.[a-z]+(\?|$)/)?.[1];
 
     const response = await cloudinary.uploader.destroy(resourcePublicId, {
       resource_type: resourceType,
     });
-
     return response;
   } catch (error) {
+    console.error("Cloudinary delete error:", error.message);
     return null;
   }
 };

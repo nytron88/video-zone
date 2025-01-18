@@ -81,11 +81,7 @@ export const updateAvatar = createAsyncThunk(
   "user/updateAvatar",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.patch("/users/update-avatar", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.patch("/users/update-avatar", data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -100,11 +96,7 @@ export const updateCover = createAsyncThunk(
   "user/updateCover",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.patch("/users/update-cover", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.patch("/users/update-cover", data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
