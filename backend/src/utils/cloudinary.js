@@ -19,13 +19,16 @@ const uploadOnCloudinary = async (resource) => {
   }
 };
 
-const deleteFromCloudinary = async (url, resourceType = "image") => {
+const deleteFromCloudinary = async (url, folder, resourceType = "image") => {
   try {
-    const resourcePublicId = url.match(/\/([^/]+)\.[a-z]+(\?|$)/)?.[1];
+    const fileName = url.match(/\/([^/]+)\.[a-z]+(\?|$)/)?.[1];
+
+    const resourcePublicId = folder ? `${folder}/${fileName}` : fileName;
 
     const response = await cloudinary.uploader.destroy(resourcePublicId, {
       resource_type: resourceType,
     });
+
     return response;
   } catch (error) {
     console.error("Cloudinary delete error:", error.message);

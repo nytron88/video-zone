@@ -268,7 +268,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar is required");
   }
 
-  await deleteFromCloudinary(req.user?.avatar);
+  await deleteFromCloudinary(req.user?.avatar, "avatars");
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,
@@ -288,7 +288,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Cover Image is required");
   }
 
-  await deleteFromCloudinary(req.user?.coverImage);
+  await deleteFromCloudinary(req.user?.coverImage, "coverImages");
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,

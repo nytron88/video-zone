@@ -7,6 +7,7 @@ import {
   updateAvatar,
   updateCover,
 } from "../../store/slices/userSlice.js";
+import useCloudinaryUpload from "../../hooks/useCloudinaryUpload.js";
 import { toast } from "react-toastify";
 import {
   Input,
@@ -19,8 +20,9 @@ import {
 
 function EditProfile() {
   const dispatch = useDispatch();
-  const { data: user, error, loading } = useSelector((state) => state.user);
+  const { data: user, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const { startUpload, error: uploadError } = useCloudinaryUpload();
 
   const {
     register,
@@ -72,26 +74,43 @@ function EditProfile() {
     const data = new FormData();
 
     if (formData.avatar) {
-      data.append("avatar", formData.avatar);
-      const resultAction = await dispatch(updateAvatar(data));
-      data.delete("avatar");
-      if (updateAvatar.fulfilled.match(resultAction)) {
-        toast.success("Avatar updated successfully.");
-      } else {
-        toast.error(error.message);
+      const uploadedResponse = await startUpload({
+        file: formData.avatar,
+        folder: "avatars",
+        resourceType: "image",
+        metadata: {
+          userId: user._id,
+          type: formData.avatar.type,
+          size: formData.avatar.size,
+        },
+      });
+
+      if (uploadError) {
+        toast.error(uploadError.message);
         return;
       }
+
+      await dispatch(updateAvatar({ avatar: uploadedResponse.secure_url }));
     }
 
     if (formData.coverImage) {
-      data.append("coverImage", formData.coverImage);
-      const resultAction = await dispatch(updateCover(data));
-      if (updateCover.fulfilled.match(resultAction)) {
-        toast.success("Cover image updated successfully.");
-      } else {
-        toast.error(error.message);
+      const uploadedResponse = await startUpload({
+        file: formData.coverImage,
+        folder: "coverImages",
+        resourceType: "image",
+        metadata: {
+          userId: user._id,
+          type: formData.coverImage.type,
+          size: formData.coverImage.size,
+        },
+      });
+
+      if (uploadError) {
+        toast.error(uploadError.message);
         return;
       }
+
+      await dispatch(updateCover({ coverImage: uploadedResponse.secure_url }));
     }
 
     if (
@@ -110,15 +129,17 @@ function EditProfile() {
         data.email = formData.email;
       }
       const resultAction = await dispatch(updateAccount(data));
-      if (updateAccount.fulfilled.match(resultAction)) {
-        toast.success("Account updated successfully.");
-      } else {
-        toast.error(error.message);
+      if (updateAccount.rejected.match(resultAction)) {
+        const errorMessage =
+          resultAction.payload?.message || "An unknown error occurred";
+        toast.error(errorMessage);
         return;
       }
     }
 
-    navigate(`/channel/${user.username}`);
+    toast.success("Profile updated successfully.");
+
+    // navigate(`/channel/${user.username}`);
     return;
   };
 

@@ -75,7 +75,7 @@ function Signup() {
         return;
       }
 
-      dispatch(updateAvatar({ avatar: uploadResponse.secure_url }));
+      await dispatch(updateAvatar({ avatar: uploadResponse.secure_url }));
     }
 
     if (formData.coverImage?.[0]) {
