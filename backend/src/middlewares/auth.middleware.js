@@ -23,12 +23,21 @@ const verifyLogin = asyncHandler(async (req, res, next) => {
     );
 
     if (!user) {
-      throw new ApiError(401, "Invalid access token");
+      throw new ApiError(401, {
+        message: "Invalid access token",
+        invalid_access_token: true,
+      });
     }
     req.user = user;
     next();
   } catch (error) {
-    throw new ApiError(401, error.message?.message || "Invalid access token");
+    throw new ApiError(
+      401,
+      error.message?.message || {
+        message: "Invalid access token",
+        invalid_access_token: true,
+      }
+    );
   }
 });
 

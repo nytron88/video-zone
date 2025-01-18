@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../../services/api";
 import abortControllerSingleton from "../../services/abortControllerSingleton";
+import axios from "axios";
 
 const initialState = {
   data: null,

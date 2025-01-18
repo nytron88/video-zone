@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/logo.svg";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../store/slices/authSlice";
-import ProfileDropdown from "./ProfileDropdown";
 import { Search, ArrowLeft, PlusCircle } from "lucide-react";
+import { logout } from "../../store/slices/authSlice";
+import Logo from "../../assets/logo.svg";
+import ProfileDropdown from "./ProfileDropdown";
 import SearchBar from "./SearchBar";
 
 function Header() {
@@ -91,20 +91,20 @@ function Header() {
             )}
 
             {!authStatus ? (
-              <>
+              <div className="flex items-center gap-2 md:gap-4 min-w-max">
                 <Link
                   to="/login"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm md:text-base px-2.5 py-1.5 md:px-4 md:py-2 rounded-md border border-violet-400"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm md:text-base px-2 py-1.5 md:px-4 md:py-2 rounded-md border border-violet-400 whitespace-nowrap"
                 >
                   Log in
                 </Link>
                 <Link
                   to="/signup"
-                  className="bg-gradient-to-r from-violet-400 to-cyan-400 text-white text-sm md:text-base px-2.5 py-1.5 md:px-4 md:py-2 rounded-md font-medium hover:from-violet-500 hover:to-cyan-500 transition-all duration-200"
+                  className="bg-gradient-to-r from-violet-400 to-cyan-400 text-white text-sm md:text-base px-2 py-1.5 md:px-4 md:py-2 rounded-md font-medium hover:from-violet-500 hover:to-cyan-500 transition-all duration-200 whitespace-nowrap"
                 >
                   Sign up
                 </Link>
-              </>
+              </div>
             ) : (
               <div className="ml-1">
                 <ProfileDropdown
@@ -118,6 +118,7 @@ function Header() {
           </div>
         </div>
       </header>
+
       {isSearchExpanded && (
         <div className="fixed inset-0 z-50 bg-black md:hidden">
           <div className="flex flex-col h-full">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "./services/api";
 import { useDispatch, useSelector } from "react-redux";
-import { refreshToken, logUser, resetError } from "./store/slices/authSlice";
+import { logoutUser, logUser, resetError } from "./store/slices/authSlice";
 import { getCurrentUser } from "./store/slices/userSlice";
 import { Loader, Footer, Header, Error, Layout } from "./components";
 import abortControllerSingleton from "./services/abortControllerSingleton";
@@ -9,8 +9,7 @@ import abortControllerSingleton from "./services/abortControllerSingleton";
 function App() {
   const [healthCheckError, setHealthCheckError] = useState("");
   const [initialLoading, setInitialLoading] = useState(true);
-  const [userInitialized, setUserInitialized] = useState(false);
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -34,21 +33,18 @@ function App() {
 
   useEffect(() => {
     const setExistingUser = async () => {
-      if (userInitialized) return;
+      if (isAuthenticated) return;
 
       try {
         const profileAction = await dispatch(getCurrentUser());
 
         if (getCurrentUser.fulfilled.match(profileAction)) {
           dispatch(logUser());
-        } else if (getCurrentUser.rejected.match(profileAction)) {
-          const refreshAction = await dispatch(refreshToken());
-          if (refreshToken.rejected.match(refreshAction)) {
-            console.error("Failed to refresh token. Logging out.");
-          }
+        } else {
+          dispatch(logoutUser());
+          console.log("Error getting user profile");
         }
       } finally {
-        setUserInitialized(true);
         dispatch(resetError());
       }
     };
@@ -58,7 +54,7 @@ function App() {
     return () => {
       abortControllerSingleton.clearController();
     };
-  }, [dispatch, userInitialized]);
+  }, [dispatch, isAuthenticated]);
 
   if (healthCheckError) {
     return <Error message={healthCheckError} />;

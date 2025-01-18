@@ -62,10 +62,9 @@ export const logout = createAsyncThunk(
 
 export const refreshToken = createAsyncThunk(
   "auth/refreshToken",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.post("/users/refresh-token");
-      await dispatch(getCurrentUser());
       return response.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -82,6 +81,9 @@ const authSlice = createSlice({
   reducers: {
     logUser: (state) => {
       state.isAuthenticated = true;
+    },
+    logoutUser: (state) => {
+      state.isAuthenticated = false;
     },
     resetError: (state) => {
       state.error = null;
@@ -139,5 +141,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logUser, resetError } = authSlice.actions;
+export const { logUser, logoutUser, resetError } = authSlice.actions;
 export default authSlice.reducer;

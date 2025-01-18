@@ -224,7 +224,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 
   if (req.user._id.toString() !== video.owner.toString()) {
     throw new ApiError(
-      401,
+      403,
       "You do not have permission to perform this action on this resource"
     );
   }
@@ -285,7 +285,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
   if (req.user._id.toString() !== video.owner.toString()) {
     return next(
       new ApiError(
-        401,
+        403,
         "You do not have permission to perform this action on this resource"
       )
     );
