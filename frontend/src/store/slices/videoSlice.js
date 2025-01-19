@@ -40,11 +40,7 @@ export const publishAVideo = createAsyncThunk(
   "video/publishAVideo",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/videos", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.post("/videos", data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

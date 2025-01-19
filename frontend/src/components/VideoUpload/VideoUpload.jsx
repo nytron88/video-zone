@@ -2,20 +2,22 @@ import React, { useState } from "react";
 import { ToastContainer } from "../index";
 import { toast } from "react-toastify";
 import { publishAVideo } from "../../store/slices/videoSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Input, Button, Loader } from "../index";
 import { Upload, Video, Image as ImageIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
 
 function VideoUpload() {
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.video);
   const navigate = useNavigate();
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [videoPreview, setVideoPreview] = useState(null);
   const [isDraggingVideo, setIsDraggingVideo] = useState(false);
   const [isDraggingThumbnail, setIsDraggingThumbnail] = useState(false);
+  const { startUpload } = useCloudinaryUpload();
+  const [isUploading, setIsUploading] = useState(false);
 
   const {
     register,
@@ -82,32 +84,55 @@ function VideoUpload() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("videoFile", data.videoFile);
-    formData.append("thumbnail", data.thumbnail);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
+    setIsUploading(true);
 
     try {
-      const resultAction = await dispatch(publishAVideo(formData));
+      const uploadedVideoResponse = await startUpload({
+        file: data.videoFile,
+        folder: "videos",
+        resourceType: "video",
+        metadata: {
+          title: data.title,
+          description: data.description,
+          size: data.videoFile.size,
+          type: data.videoFile.type,
+        },
+      });
+
+      const uploadedThumbnailResponse = await startUpload({
+        file: data.thumbnail,
+        folder: "thumbnails",
+        resourceType: "image",
+        metadata: {
+          title: data.title,
+          description: data.description,
+          size: data.thumbnail.size,
+          type: data.thumbnail.type,
+        },
+      });
+
+      const submitData = {
+        title: data.title,
+        description: data.description,
+        uploadedVideoResponse,
+        thumbnailLink: uploadedThumbnailResponse.secure_url,
+      };
+
+      const resultAction = await dispatch(publishAVideo(submitData));
       if (publishAVideo.fulfilled.match(resultAction)) {
-        toast.success("Video uploaded successfully!");
-        setVideoPreview(null);
-        setThumbnailPreview(null);
-        setValue("title", "");
-        setValue("description", "");
-        setValue("videoFile", null);
-        setValue("thumbnail", null);
-        navigate(`/video/${resultAction.payload._id}`);
+        toast.success("Video published successfully!");
+        return navigate(`/video/${resultAction.payload._id}`);
       } else {
-        toast.error("Failed to upload video");
+        throw new Error("Failed to publish video");
       }
     } catch (err) {
-      toast.error(error?.message || "Something went wrong!");
+      return toast.error(err.message || "Something went wrong during upload!");
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  if (loading) return <Loader />;
+  if (isUploading) return <Loader />;
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">

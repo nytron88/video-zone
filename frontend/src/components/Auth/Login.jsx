@@ -1,8 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { login, resetError } from "../../store/slices/authSlice";
+import { login } from "../../store/slices/authSlice";
 import { Input, Button, PasswordInput, ToastContainer } from "../index";
 import { toast } from "react-toastify";
 
@@ -21,12 +21,9 @@ function Login() {
     if (login.rejected.match(loginAction)) {
       const errorMessage =
         loginAction.payload?.message || "An unknown error occurred";
-      toast.error(errorMessage);
-      return;
+      return toast.error(errorMessage);
     }
-
-    dispatch(resetError());
-    navigate("/");
+    return navigate("/");
   };
 
   return (

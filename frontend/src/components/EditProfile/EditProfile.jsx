@@ -20,9 +20,10 @@ import {
 
 function EditProfile() {
   const dispatch = useDispatch();
-  const { data: user, loading } = useSelector((state) => state.user);
+  const { data: user } = useSelector((state) => state.user);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { startUpload, error: uploadError } = useCloudinaryUpload();
+  const { startUpload } = useCloudinaryUpload();
 
   const {
     register,
@@ -71,76 +72,74 @@ function EditProfile() {
       return;
     }
 
-    const data = new FormData();
+    setLoading(true);
 
-    if (formData.avatar) {
-      const uploadedResponse = await startUpload({
-        file: formData.avatar,
-        folder: "avatars",
-        resourceType: "image",
-        metadata: {
-          userId: user._id,
-          type: formData.avatar.type,
-          size: formData.avatar.size,
-        },
-      });
+    try {
+      if (formData?.avatar) {
+        const uploadedResponse = await startUpload({
+          file: formData.avatar,
+          folder: "avatars",
+          resourceType: "image",
+          metadata: {
+            userId: user._id,
+            type: formData.avatar.type,
+            size: formData.avatar.size,
+          },
+        });
 
-      if (uploadError) {
-        toast.error(uploadError.message);
-        return;
+        await dispatch(updateAvatar({ avatar: uploadedResponse.secure_url }));
       }
 
-      await dispatch(updateAvatar({ avatar: uploadedResponse.secure_url }));
+      if (formData?.coverImage) {
+        const uploadedResponse = await startUpload({
+          file: formData.coverImage,
+          folder: "coverImages",
+          resourceType: "image",
+          metadata: {
+            userId: user._id,
+            type: formData.coverImage.type,
+            size: formData.coverImage.size,
+          },
+        });
+
+        await dispatch(
+          updateCover({ coverImage: uploadedResponse.secure_url })
+        );
+      }
+
+      if (
+        formData.fullName !== user.fullname ||
+        formData.username !== user.username ||
+        formData.email !== user.email
+      ) {
+        let data = {};
+        if (formData.fullName !== user.fullname) {
+          data.fullname = formData.fullName;
+        }
+        if (formData.username !== user.username) {
+          data.username = formData.username;
+        }
+        if (formData.email !== user.email) {
+          data.email = formData.email;
+        }
+        const resultAction = await dispatch(updateAccount(data));
+        if (updateAccount.fulfilled.match(resultAction)) {
+          toast.success("Profile updated successfully.");
+          return navigate(`/channel/${user.username}`);
+        } else {
+          throw new Error(resultAction.payload.message);
+        }
+      }
+
+      toast.success("Profile updated successfully.");
+      return navigate(`/channel/${user.username}`);
+    } catch (err) {
+      return toast.error(
+        err.message || "Something went wrong during editing profile!"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    if (formData.coverImage) {
-      const uploadedResponse = await startUpload({
-        file: formData.coverImage,
-        folder: "coverImages",
-        resourceType: "image",
-        metadata: {
-          userId: user._id,
-          type: formData.coverImage.type,
-          size: formData.coverImage.size,
-        },
-      });
-
-      if (uploadError) {
-        toast.error(uploadError.message);
-        return;
-      }
-
-      await dispatch(updateCover({ coverImage: uploadedResponse.secure_url }));
-    }
-
-    if (
-      formData.fullName !== user.fullname ||
-      formData.username !== user.username ||
-      formData.email !== user.email
-    ) {
-      let data = {};
-      if (formData.fullName !== user.fullname) {
-        data.fullname = formData.fullName;
-      }
-      if (formData.username !== user.username) {
-        data.username = formData.username;
-      }
-      if (formData.email !== user.email) {
-        data.email = formData.email;
-      }
-      const resultAction = await dispatch(updateAccount(data));
-      if (updateAccount.rejected.match(resultAction)) {
-        const errorMessage =
-          resultAction.payload?.message || "An unknown error occurred";
-        toast.error(errorMessage);
-        return;
-      }
-    }
-
-    toast.success("Profile updated successfully.");
-
-    // navigate(`/channel/${user.username}`);
-    return;
   };
 
   if (loading) return <Loader />;

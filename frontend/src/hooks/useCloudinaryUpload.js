@@ -15,7 +15,6 @@ const useCloudinaryUpload = () => {
     resourceType = "auto",
     metadata = {},
   }) => {
-    console.log("Uploading file:", file);
     try {
       const signedUrlResponse = await dispatch(
         uploadFile({ folder, resourceType, metadata: JSON.stringify(metadata) })
@@ -44,8 +43,6 @@ const useCloudinaryUpload = () => {
           setUploadProgress(progress);
         },
       });
-
-      console.log("Upload response:", uploadResponse);
 
       return uploadResponse.data;
     } catch (err) {

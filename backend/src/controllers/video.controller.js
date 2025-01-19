@@ -9,7 +9,7 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import fs from "fs/promises";
-import { allowedImageMimeTypes, allowedVideoMimeTypes } from "../constants.js";
+import { allowedImageMimeTypes } from "../constants.js";
 import {
   uploadOnCloudinary,
   deleteFromCloudinary,
@@ -117,55 +117,25 @@ const getAllVideos = asyncHandler(async (req, res) => {
 });
 
 const publishAVideo = asyncHandler(async (req, res) => {
-  const { title, description } = req.body;
-  const videoFile = req.files?.videoFile?.[0];
-  const thumbnail = req.files?.thumbnail?.[0];
+  const { title, description, uploadedVideoResponse, thumbnailLink } = req.body;
 
-  if (!title || !description || !videoFile || !thumbnail) {
-    if (videoFile) {
-      await fs.unlink(videoFile.path);
+  if (!title || !description || !uploadedVideoResponse || !thumbnailLink) {
+    if (uploadedVideoResponse) {
+      await deleteFromCloudinary(videoLink.secure_url, "videos");
     }
 
-    if (thumbnail) {
-      await fs.unlink(thumbnail.path);
+    if (thumbnailLink) {
+      await deleteFromCloudinary(thumbnailLink, "thumbnails");
     }
     throw new ApiError(400, "Please provide all required fields");
   }
 
-  if (!allowedVideoMimeTypes.includes(videoFile.mimetype)) {
-    await fs.unlink(videoFile.path);
-    await fs.unlink(thumbnail.path);
-    throw new ApiError(
-      400,
-      "Invalid video file type. Allowed types: MP4, AVI, MKV"
-    );
-  }
-
-  if (!allowedImageMimeTypes.includes(thumbnail.mimetype)) {
-    await fs.unlink(videoFile.path);
-    await fs.unlink(thumbnail.path);
-    throw new ApiError(
-      400,
-      "Invalid thumbnail file type. Allowed types: JPEG, PNG, WEBP"
-    );
-  }
-
-  const videoFileLocalPath = videoFile.path;
-  const thumbnailLocalPath = thumbnail.path;
-
-  const uploadedVideoFile = await uploadOnCloudinary(videoFileLocalPath);
-  const uploadedThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
-
-  if (!uploadedVideoFile || !uploadedThumbnail) {
-    throw new ApiError(500, "Error uploading files");
-  }
-
   const video = await Video.create({
-    videoFile: uploadedVideoFile.url,
-    thumbnail: uploadedThumbnail.url,
+    videoFile: uploadedVideoResponse.secure_url,
+    thumbnail: thumbnailLink,
     title,
     description,
-    duration: uploadedVideoFile.duration,
+    duration: uploadedVideoResponse.duration,
     owner: req.user._id,
   });
 

@@ -1,12 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import {
-  login,
-  register as signup,
-  resetError,
-} from "../../store/slices/authSlice";
+import { login, register as signup } from "../../store/slices/authSlice";
 import { updateAvatar, updateCover } from "../../store/slices/userSlice";
 import {
   Input,
@@ -25,87 +21,90 @@ function Signup() {
     formState: { errors },
     watch,
   } = useForm();
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { startUpload, uploadError } = useCloudinaryUpload();
+  const { startUpload } = useCloudinaryUpload();
 
   const submit = async (formData) => {
-    const submitData = {
-      fullname: formData.fullname,
-      email: formData.email,
-      username: formData.username,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-    };
+    setLoading(true);
+    try {
+      const submitData = {
+        fullname: formData.fullname,
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      };
 
-    const signupAction = await dispatch(signup(submitData));
+      const signupAction = await dispatch(signup(submitData));
 
-    if (signup.rejected.match(signupAction)) {
-      const errorMessage =
-        signupAction.payload?.message || "An unknown error occurred";
-      toast.error(errorMessage);
-      return;
-    }
-
-    const { email, password } = submitData;
-    const loginAction = await dispatch(login({ email, password }));
-
-    if (login.rejected.match(loginAction)) {
-      const errorMessage =
-        loginAction.payload?.message || "An unknown error occurred";
-      toast.error(errorMessage);
-      return;
-    }
-
-    if (formData.avatar?.[0]) {
-      const uploadResponse = await startUpload({
-        file: formData.avatar[0],
-        folder: "avatars",
-        resourceType: "image",
-        metadata: {
-          username: formData.username,
-          email: formData.email,
-          type: formData.avatar[0].type,
-          size: formData.avatar[0].size,
-        },
-      });
-
-      if (uploadError) {
-        toast.error(uploadError.message);
+      if (signup.rejected.match(signupAction)) {
+        const errorMessage =
+          signupAction.payload?.message || "An unknown error occurred";
+        toast.error(errorMessage);
         return;
       }
 
-      await dispatch(updateAvatar({ avatar: uploadResponse.secure_url }));
-    }
+      const { email, password } = submitData;
+      const loginAction = await dispatch(login({ email, password }));
 
-    if (formData.coverImage?.[0]) {
-      const uploadResponse = await startUpload({
-        file: formData.coverImage[0],
-        folder: "coverImages",
-        resourceType: "image",
-        metadata: {
-          username: formData.username,
-          email: formData.email,
-          type: formData.coverImage[0].type,
-          size: formData.coverImage[0].size,
-        },
-      });
-
-      if (uploadError) {
-        toast.error(uploadError.message);
+      if (login.rejected.match(loginAction)) {
+        const errorMessage =
+          loginAction.payload?.message || "An unknown error occurred";
+        toast.error(errorMessage);
         return;
       }
 
-      dispatch(
-        updateCover({
-          coverImage: uploadResponse.secure_url,
-        })
+      if (formData.avatar?.[0]) {
+        const uploadResponse = await startUpload({
+          file: formData.avatar[0],
+          folder: "avatars",
+          resourceType: "image",
+          metadata: {
+            username: formData.username,
+            email: formData.email,
+            type: formData.avatar[0].type,
+            size: formData.avatar[0].size,
+          },
+        });
+        if (!uploadResponse) throw new Error("Failed to upload avatar.");
+        await dispatch(updateAvatar({ avatar: uploadResponse.secure_url }));
+      }
+
+      if (formData.coverImage?.[0]) {
+        const uploadResponse = await startUpload({
+          file: formData.coverImage[0],
+          folder: "coverImages",
+          resourceType: "image",
+          metadata: {
+            username: formData.username,
+            email: formData.email,
+            type: formData.coverImage[0].type,
+            size: formData.coverImage[0].size,
+          },
+        });
+
+        if (!uploadResponse) throw new Error("Failed to upload avatar.");
+        dispatch(
+          updateCover({
+            coverImage: uploadResponse.secure_url,
+          })
+        );
+      }
+    } catch (err) {
+      return toast.error(
+        err?.message ||
+          "There was an error while uploading your avatar or cover image."
       );
+    } finally {
+      setLoading(false);
     }
 
-    dispatch(resetError());
-    navigate("/");
+    return navigate("/");
   };
+
+  if (loading) return <Loader />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
@@ -218,20 +217,15 @@ function Signup() {
               register={register}
             />
           </div>
-
-          {/* Submit Button */}
           <div className="col-span-1 md:col-span-2">
-            <Button className="w-full" type="submit" variant="outline">
-              Create Account
+            <Button
+              className="w-full"
+              type="submit"
+              variant="outline"
+              disabled={loading}
+            >
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
-            {/* 
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-center mt-4">
-                <p className="text-red-500 text-sm font-medium">
-                  {error.message}
-                </p>
-              </div>
-            )} */}
           </div>
         </form>
 

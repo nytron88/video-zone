@@ -14,22 +14,7 @@ import upload from "../middlewares/multer.middleware.js";
 const router = Router();
 router.use(verifyLogin);
 
-router
-  .route("/")
-  .get(getAllVideos)
-  .post(
-    upload.fields([
-      {
-        name: "videoFile",
-        maxCount: 1,
-      },
-      {
-        name: "thumbnail",
-        maxCount: 1,
-      },
-    ]),
-    publishAVideo
-  );
+router.route("/").get(getAllVideos).post(publishAVideo);
 
 router.route("/search").get(searchVideosAndChannels);
 

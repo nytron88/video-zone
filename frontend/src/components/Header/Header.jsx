@@ -11,8 +11,7 @@ function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const authStatus = useSelector((state) => state.auth.isAuthenticated);
-  const userData = useSelector((state) => state.user.data);
-  const loading = useSelector((state) => state.user.loading);
+  const { data: userData, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -71,7 +70,7 @@ function Header() {
             />
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <button
               onClick={() => setIsSearchExpanded(true)}
               className="md:hidden p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-full transition-colors"
@@ -83,10 +82,10 @@ function Header() {
             {authStatus && (
               <Link
                 to="/upload"
-                className="flex items-center gap-1 md:gap-2 border border-violet-400 text-gray-300 px-2 py-1.5 md:px-4 md:py-2 rounded-md hover:border-violet-500 hover:text-white transition-all duration-200"
+                className="flex items-center gap-1 md:gap-2 border border-violet-400 text-gray-300 px-2 py-1.5 md:px-4 md:py-2 rounded-md hover:border-violet-500 hover:text-white transition-all duration-200 shrink-0"
               >
                 <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
-                <span className="text-sm md:text-base">Create</span>
+                <span className="text-sm md:text-base sm:inline">Create</span>
               </Link>
             )}
 
@@ -106,7 +105,7 @@ function Header() {
                 </Link>
               </div>
             ) : (
-              <div className="ml-1">
+              <div className="shrink-0">
                 <ProfileDropdown
                   avatar={userData?.avatar}
                   fullName={userData?.fullname}
