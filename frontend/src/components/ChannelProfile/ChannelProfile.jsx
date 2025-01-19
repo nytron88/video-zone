@@ -13,6 +13,6 @@ function ChannelProfile() {
     { id: "videos", label: "Videos" },
     { id: "playlist", label: "Playlist" },
     { id: "tweets", label: "Tweets" },
-    { id: "following", label: "Following" },
+    { id: "subscriptions", label: "Subscriptions" },
   ];
 }

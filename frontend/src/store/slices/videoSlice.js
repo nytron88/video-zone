@@ -70,11 +70,7 @@ export const updateVideo = createAsyncThunk(
   "video/updateVideo",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.patch(`/videos/${data.id}`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.patch(`/videos/${data.id}`, data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "./services/api";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, logUser, resetError } from "./store/slices/authSlice";
+import { logoutUser, logUser } from "./store/slices/authSlice";
 import { getCurrentUser } from "./store/slices/userSlice";
 import { Loader, Footer, Header, Error, Layout } from "./components";
 import abortControllerSingleton from "./services/abortControllerSingleton";
@@ -35,17 +35,13 @@ function App() {
     const setExistingUser = async () => {
       if (isAuthenticated) return;
 
-      try {
-        const profileAction = await dispatch(getCurrentUser());
+      const profileAction = await dispatch(getCurrentUser());
 
-        if (getCurrentUser.fulfilled.match(profileAction)) {
-          dispatch(logUser());
-        } else {
-          dispatch(logoutUser());
-          console.log("Error getting user profile");
-        }
-      } finally {
-        dispatch(resetError());
+      if (getCurrentUser.fulfilled.match(profileAction)) {
+        dispatch(logUser());
+      } else {
+        dispatch(logoutUser());
+        console.log("Error getting user profile");
       }
     };
 
