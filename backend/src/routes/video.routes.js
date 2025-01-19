@@ -9,7 +9,6 @@ import {
   searchVideosAndChannels,
 } from "../controllers/video.controller.js";
 import verifyLogin from "../middlewares/auth.middleware.js";
-import upload from "../middlewares/multer.middleware.js";
 
 const router = Router();
 router.use(verifyLogin);
@@ -22,7 +21,7 @@ router
   .route("/:videoId")
   .get(getVideoById)
   .delete(deleteVideo)
-  .patch(upload.single("thumbnail"), updateVideo);
+  .patch(updateVideo);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 

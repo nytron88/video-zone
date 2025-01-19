@@ -8,12 +8,7 @@ import { User } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import fs from "fs/promises";
-import { allowedImageMimeTypes } from "../constants.js";
-import {
-  uploadOnCloudinary,
-  deleteFromCloudinary,
-} from "../utils/cloudinary.js";
+import { deleteFromCloudinary } from "../utils/cloudinary.js";
 
 // search functionality to search for videos with basic query and pagination,
 // mainly for video display on a channel, simple and lightweigh queries, and userId based search
@@ -180,7 +175,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  const { title, description } = req.body;
+  const { title, description, uploadedVideoResponse } = req.body;
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid video ID");
@@ -199,7 +194,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     );
   }
 
-  if (!title && !description && !req.file) {
+  if (!title && !description && !uploadedVideoResponse) {
     throw new ApiError(400, "Please provide at least one field to update");
   }
 
@@ -208,26 +203,11 @@ const updateVideo = asyncHandler(async (req, res) => {
   if (title) updates.title = title;
   if (description) updates.description = description;
 
-  if (req.file) {
-    if (!allowedImageMimeTypes.includes(req.file?.mimetype)) {
-      await fs.unlink(req.file.path);
-      throw new ApiError(
-        400,
-        "Invalid thumbnail file type. Allowed types: JPEG, PNG, WEBP"
-      );
-    }
+  if (uploadedVideoResponse) {
+    await deleteFromCloudinary(video.videoFile, "videos");
+    await deleteFromCloudinary(video.thumbnail, "thumbnails");
 
-    const thumbnailLocalPath = req.file?.path;
-
-    await deleteFromCloudinary(video.thumbnail);
-    const uploadedThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
-
-    if (!uploadedThumbnail) {
-      await fs.unlink(req.file.path);
-      throw new ApiError(500, "Error uploading thumbnail");
-    }
-
-    updates.thumbnail = uploadedThumbnail.url;
+    updates.videoFile = uploadedVideoResponse.secure_url;
   }
 
   const updatedVideo = await Video.findByIdAndUpdate(videoId, updates, {
@@ -270,8 +250,8 @@ const deleteVideo = asyncHandler(async (req, res) => {
     { videos: videoId },
     { $pull: { videos: videoId } }
   );
-  await deleteFromCloudinary(deletedVideo.videoFile);
-  await deleteFromCloudinary(deletedVideo.thumbnail);
+  await deleteFromCloudinary(deletedVideo.videoFile, "videos");
+  await deleteFromCloudinary(deletedVideo.thumbnail, "thumbnails");
 
   return res
     .status(200)
