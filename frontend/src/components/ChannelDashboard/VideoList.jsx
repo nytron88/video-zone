@@ -1,7 +1,10 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getChannelVideos } from "../../store/slices/dashboardSlice";
-import { deleteVideo } from "../../store/slices/videoSlice";
+import {
+  deleteVideo,
+  togglePublishStatus,
+} from "../../store/slices/videoSlice";
 import { toast } from "react-toastify";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Eye, ThumbsUp, Edit2, Trash2, RefreshCcw } from "lucide-react";
@@ -93,6 +96,38 @@ function VideoList() {
     }
   };
 
+  const handleTogglePublish = async (videoId, currentStatus) => {
+    try {
+      await dispatch(togglePublishStatus(videoId)).unwrap();
+      handleRefresh();
+    } catch (error) {
+      toast.error("Failed to update video status");
+    }
+  };
+
+  const Toggle = ({ isChecked, onChange, disabled }) => (
+    <div className="flex items-center gap-2">
+      <span className="text-sm text-gray-400">Draft</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isChecked}
+        disabled={disabled}
+        onClick={onChange}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+          isChecked ? "bg-purple-500" : "bg-gray-700"
+        } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out ${
+            isChecked ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
+      </button>
+      <span className="text-sm text-gray-400">Published</span>
+    </div>
+  );
+
   const DeleteConfirmDialog = () => (
     <div
       className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ${
@@ -176,7 +211,7 @@ function VideoList() {
           <h3 className="text-white font-medium text-lg leading-tight line-clamp-2">
             {video.title}
           </h3>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-4">
             <p className="text-gray-400 text-sm">
               {new Date(video.createdAt).toLocaleDateString(undefined, {
                 year: "numeric",
@@ -184,9 +219,11 @@ function VideoList() {
                 day: "numeric",
               })}
             </p>
-            <span className="text-purple-400 text-sm font-medium px-3 py-1 bg-purple-500/10 rounded-full">
-              {video.isPublished ? "Published" : "Draft"}
-            </span>
+            <Toggle
+              isChecked={video.isPublished}
+              onChange={() => handleTogglePublish(video._id, video.isPublished)}
+              disabled={false}
+            />
           </div>
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex items-center gap-2 text-gray-400">

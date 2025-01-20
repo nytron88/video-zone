@@ -34,6 +34,7 @@ function VideoDisplay({ limit = 16, sortBy = "views", sortType = "desc" }) {
             limit,
             sortBy,
             sortType,
+            isPublished: true,
           })
         ).unwrap();
 

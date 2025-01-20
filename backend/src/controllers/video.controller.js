@@ -14,7 +14,15 @@ import { deleteFromCloudinary } from "../utils/cloudinary.js";
 // mainly for video display on a channel, simple and lightweigh queries, and userId based search
 // on the frontend client
 const getAllVideos = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    query,
+    sortBy,
+    sortType,
+    isPublished,
+    userId,
+  } = req.query;
 
   const pipeline = [];
 
@@ -26,6 +34,14 @@ const getAllVideos = asyncHandler(async (req, res) => {
     pipeline.push({
       $match: {
         owner: new mongoose.Types.ObjectId(userId),
+      },
+    });
+  }
+
+  if (isPublished) {
+    pipeline.push({
+      $match: {
+        isPublished: isPublished === "true",
       },
     });
   }
