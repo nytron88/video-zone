@@ -22,65 +22,65 @@ function VideoDisplay({ limit = 16, sortBy = "views", sortType = "desc" }) {
     );
   }, []);
 
-  const fetchVideos = useCallback(async () => {
-    if (loading || !hasMore) return;
+  const fetchVideos = useCallback(
+    throttle(async () => {
+      if (loading || !hasMore) return;
 
-    setLoading(true);
-    try {
-      const fetchedVideosData = await dispatch(
-        getAllVideos({
-          page,
-          limit,
-          sortBy,
-          sortType,
-        })
-      ).unwrap();
-
-      setVideos((prevVideos) => {
-        const newUniqueVideos = fetchedVideosData.videos
-          .filter((video) => {
-            if (seenIds.has(video._id)) {
-              return false;
-            }
-            seenIds.add(video._id);
-            return true;
+      setLoading(true);
+      try {
+        const fetchedVideosData = await dispatch(
+          getAllVideos({
+            page,
+            limit,
+            sortBy,
+            sortType,
           })
-          .map((video) => ({
-            ...video,
-            loaded: false,
-          }));
+        ).unwrap();
 
-        if (newUniqueVideos.length === 0) {
+        setVideos((prevVideos) => {
+          const newUniqueVideos = fetchedVideosData.videos
+            .filter((video) => {
+              if (seenIds.has(video._id)) {
+                return false;
+              }
+              seenIds.add(video._id);
+              return true;
+            })
+            .map((video) => ({
+              ...video,
+              loaded: false,
+            }));
+
+          if (newUniqueVideos.length === 0) {
+            setHasMore(false);
+            return prevVideos;
+          }
+
+          return [...prevVideos, ...newUniqueVideos];
+        });
+
+        if (
+          !fetchedVideosData.hasNextPage ||
+          fetchedVideosData.videos.length < limit
+        ) {
           setHasMore(false);
-          return prevVideos;
         }
 
-        return [...prevVideos, ...newUniqueVideos];
-      });
-
-      if (
-        !fetchedVideosData.hasNextPage ||
-        fetchedVideosData.videos.length < limit
-      ) {
+        setPage((prevPage) => prevPage + 1);
+      } catch (error) {
+        setError(error.message);
         setHasMore(false);
+      } finally {
+        setLoading(false);
+        setInitialLoading(false);
       }
-
-      setPage((prevPage) => prevPage + 1);
-    } catch (error) {
-      setError(error.message);
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-      setInitialLoading(false);
-    }
-  }, [dispatch, page, hasMore, loading, seenIds]);
-
-  const throttledFetchVideos = throttle(() => {
-    fetchVideos();
-  }, 1000);
+    }, 1000),
+    [dispatch, page, hasMore, loading, seenIds]
+  );
 
   useEffect(() => {
-    throttledFetchVideos();
+    fetchVideos();
+    return () => fetchVideos.cancel();
   }, []);
 
   const LoadingIndicator = () => (

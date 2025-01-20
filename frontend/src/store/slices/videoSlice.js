@@ -53,9 +53,11 @@ export const publishAVideo = createAsyncThunk(
 
 export const getVideoById = createAsyncThunk(
   "video/getVideoById",
-  async (id, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/videos/${id}`);
+      const response = await apiClient.get(
+        `/videos/${data._id}?incrementView=${data.incrementView}`
+      );
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -70,7 +72,7 @@ export const updateVideo = createAsyncThunk(
   "video/updateVideo",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.patch(`/videos/${data.id}`, data);
+      const response = await apiClient.patch(`/videos/${data._id}`, data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

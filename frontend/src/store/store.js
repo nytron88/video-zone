@@ -7,6 +7,7 @@ import watchHistoryReducer from "./slices/watchHistorySlice";
 import tweetReducer from "./slices/tweetSlice";
 import subscriptionReducer from "./slices/subscriptionSlice";
 import playlistReducer from "./slices/playlistSlice";
+import dashboardSlice from "./slices/dashboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
     tweet: tweetReducer,
     subscription: subscriptionReducer,
     playlist: playlistReducer,
+    dashboard: dashboardSlice,
   },
 });

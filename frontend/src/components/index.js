@@ -18,6 +18,8 @@ import VideoDisplay from "./VideoDisplay/VideoDisplay";
 import Sidebar from "./Common/Sidebar";
 import Layout from "./Layout/Layout";
 import VideoUpload from "./VideoUpload/VideoUpload";
+import ChannelDashboard from "./ChannelDashboard/ChannelDashboard";
+import EditVideo from "./EditVideo/EditVideo";
 
 export {
   Login,
@@ -40,4 +42,6 @@ export {
   Sidebar,
   Layout,
   VideoUpload,
+  ChannelDashboard,
+  EditVideo,
 };

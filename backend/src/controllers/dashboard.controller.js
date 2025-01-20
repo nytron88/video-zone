@@ -37,10 +37,6 @@ const getChannelStats = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if (!stats.length) {
-    throw new ApiError(404, "Channel not found or no videos available");
-  }
-
   const subscriberCount = await Subscription.countDocuments({
     channel: channelId,
   });
@@ -93,11 +89,14 @@ const getChannelVideos = asyncHandler(async (req, res) => {
         views: 1,
         createdAt: 1,
         thumbnail: 1,
+        views: 1,
+        isPublished: 1,
         totalLikes: { $size: "$likes" },
       },
     },
     {
       $sort: {
+        views: -1,
         createdAt: -1,
       },
     },

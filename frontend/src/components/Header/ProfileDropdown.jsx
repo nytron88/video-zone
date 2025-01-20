@@ -49,6 +49,12 @@ function ProfileDropdown({ avatar, fullName, username, onLogout }) {
               View your channel
             </Link>
             <Link
+              to={`/dashboard`}
+              className="block px-4 py-2 text-sm text-yellow-400 hover:bg-gray-700"
+            >
+              Go to your dashboard
+            </Link>
+            <Link
               to={`/edit-profile`}
               className="block px-4 py-2 text-sm text-green-400 hover:bg-gray-700"
             >

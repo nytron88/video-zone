@@ -141,16 +141,17 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+  const { incrementView = false } = req.query;
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid video ID");
   }
 
-  const video = await Video.findByIdAndUpdate(
-    videoId,
-    { $inc: { views: 1 } },
-    { new: true }
-  );
+  const updateQuery = incrementView === "true" ? { $inc: { views: 1 } } : {};
+
+  const video = await Video.findByIdAndUpdate(videoId, updateQuery, {
+    new: true,
+  });
 
   if (!video) {
     throw new ApiError(404, "Video not found");
@@ -175,7 +176,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  const { title, description, uploadedVideoResponse } = req.body;
+  const { title, description, uploadedVideoResponse, thumbnailLink } = req.body;
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid video ID");
@@ -205,9 +206,13 @@ const updateVideo = asyncHandler(async (req, res) => {
 
   if (uploadedVideoResponse) {
     await deleteFromCloudinary(video.videoFile, "videos");
-    await deleteFromCloudinary(video.thumbnail, "thumbnails");
 
     updates.videoFile = uploadedVideoResponse.secure_url;
+  }
+
+  if (thumbnailLink) {
+    await deleteFromCloudinary(video.thumbnail, "thumbnails");
+    updates.thumbnail = thumbnailLink;
   }
 
   const updatedVideo = await Video.findByIdAndUpdate(videoId, updates, {
