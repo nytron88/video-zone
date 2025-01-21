@@ -25,12 +25,12 @@ export const getChannelStats = createAsyncThunk(
 export const getChannelVideos = createAsyncThunk(
   "dashboard/getChannelVideos",
   async (data, { rejectWithValue }) => {
-    let url = `/dashboard/videos/${data.channelId}`;
+    let url = `/dashboard/videos/${data.username}`;
     try {
       const queryParams = Object.entries(data || {})
         .filter(
           ([key, value]) =>
-            key !== "channelId" &&
+            key !== "username" &&
             value !== undefined &&
             value !== null &&
             value !== ""

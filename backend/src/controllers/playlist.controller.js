@@ -25,13 +25,9 @@ const createPlaylist = asyncHandler(async (req, res) => {
 });
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
+  const { username } = req.params;
 
-  if (!isValidObjectId(userId)) {
-    throw new ApiError(400, "Invalid user ID");
-  }
-
-  const user = await User.findById(userId);
+  const user = await User.findOne({ username });
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -40,7 +36,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
   const playlists = await Playlist.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(userId),
+        owner: new mongoose.Types.ObjectId(user._id),
       },
     },
     {

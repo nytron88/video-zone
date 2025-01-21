@@ -59,34 +59,38 @@ function Header() {
             </span>
           </Link>
 
-          <div className="hidden md:block w-[60%] mx-auto max-w-2xl">
-            <SearchBar
-              placeholder="Search for videos"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onSearchIconClick={handleSearchIconClick}
-              onResultClick={handleResultClick}
-              isMobileSearch={false}
-            />
-          </div>
+          {authStatus && (
+            <div className="hidden md:block w-[60%] mx-auto max-w-2xl">
+              <SearchBar
+                placeholder="Search for videos"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onSearchIconClick={handleSearchIconClick}
+                onResultClick={handleResultClick}
+                isMobileSearch={false}
+              />
+            </div>
+          )}
 
           <div className="flex items-center gap-3 md:gap-4">
-            <button
-              onClick={() => setIsSearchExpanded(true)}
-              className="md:hidden p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-full transition-colors"
-              aria-label="Open Search"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-
             {authStatus && (
-              <Link
-                to="/upload"
-                className="flex items-center gap-1 md:gap-2 border border-violet-400 text-gray-300 px-2 py-1.5 md:px-4 md:py-2 rounded-md hover:border-violet-500 hover:text-white transition-all duration-200 shrink-0"
-              >
-                <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
-                <span className="text-sm md:text-base sm:inline">Create</span>
-              </Link>
+              <>
+                <button
+                  onClick={() => setIsSearchExpanded(true)}
+                  className="md:hidden p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-full transition-colors"
+                  aria-label="Open Search"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+
+                <Link
+                  to="/upload"
+                  className="flex items-center gap-1 md:gap-2 border border-violet-400 text-gray-300 px-2 py-1.5 md:px-4 md:py-2 rounded-md hover:border-violet-500 hover:text-white transition-all duration-200 shrink-0"
+                >
+                  <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base sm:inline">Create</span>
+                </Link>
+              </>
             )}
 
             {!authStatus ? (

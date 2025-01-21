@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer } from "../index";
 import { toast } from "react-toastify";
 import { updateVideo, getVideoById } from "../../store/slices/videoSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Input, Button, Loader } from "../index";
-import { Upload, Video, Image as ImageIcon, Edit } from "lucide-react";
+import { Video, Image as ImageIcon, Edit } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
 
@@ -19,6 +19,7 @@ function EditVideo() {
   const [isDraggingThumbnail, setIsDraggingThumbnail] = useState(false);
   const { startUpload } = useCloudinaryUpload();
   const [isLoading, setIsLoading] = useState(true);
+  const { data: userData } = useSelector((state) => state.user);
 
   const {
     register,
@@ -143,7 +144,10 @@ function EditVideo() {
       try {
         const video = await dispatch(getVideoById({ _id: videoId })).unwrap();
 
-        // Set pre-filled form values
+        if (userData._id !== video.owner) {
+          return navigate(`/video/${videoId}`);
+        }
+
         setValue("title", video.title);
         setValue("description", video.description);
         setVideoPreview(video.videoFile);

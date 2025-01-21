@@ -20,6 +20,7 @@ import Layout from "./Layout/Layout";
 import VideoUpload from "./VideoUpload/VideoUpload";
 import ChannelDashboard from "./ChannelDashboard/ChannelDashboard";
 import EditVideo from "./EditVideo/EditVideo";
+import ChannelProfile from "./ChannelProfile/ChannelProfile";
 
 export {
   Login,
@@ -44,4 +45,5 @@ export {
   VideoUpload,
   ChannelDashboard,
   EditVideo,
+  ChannelProfile,
 };

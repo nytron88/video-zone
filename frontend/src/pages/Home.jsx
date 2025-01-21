@@ -16,7 +16,7 @@ function Home() {
       <div className="w-full max-w-2xl mx-auto text-center space-y-6">
         <div className="bg-gray-900/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-800">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Try searching to get started
+            Create an account to get started
           </h1>
           <p className="text-gray-400 text-lg mb-8">
             Start watching videos to help us build a feed of videos you'll love.

@@ -40,7 +40,7 @@ function ChannelDashboard() {
       try {
         const fetchedData = await dispatch(
           getChannelVideos({
-            channelId: userData._id,
+            username: userData.username,
             page: pageNum,
             limit: 10,
           })

@@ -6,7 +6,12 @@ import VideoCard from "./VideoCard";
 import LoadingSkeleton from "./LoadingSkeleton";
 import { throttle } from "lodash";
 
-function VideoDisplay({ limit = 16, sortBy = "views", sortType = "desc" }) {
+function VideoDisplay({
+  limit = 16,
+  sortBy = "views",
+  sortType = "desc",
+  userId,
+}) {
   const dispatch = useDispatch();
   const [videos, setVideos] = useState([]);
   const [page, setPage] = useState(1);
@@ -34,6 +39,7 @@ function VideoDisplay({ limit = 16, sortBy = "views", sortType = "desc" }) {
             limit,
             sortBy,
             sortType,
+            userId,
             isPublished: true,
           })
         ).unwrap();

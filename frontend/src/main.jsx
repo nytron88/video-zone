@@ -19,6 +19,7 @@ import {
   VideoUpload,
   ChannelDashboard,
   EditVideo,
+  ChannelProfile,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -78,6 +79,14 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <EditVideo />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="channel/:username"
+        element={
+          <AuthLayout authentication>
+            <ChannelProfile />
           </AuthLayout>
         }
       />

@@ -24,9 +24,9 @@ export const createTweet = createAsyncThunk(
 
 export const getUserTweets = createAsyncThunk(
   "tweet/getUserTweets",
-  async (userId, { rejectWithValue }) => {
+  async (username, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/tweets/user/${userId}`);
+      const response = await apiClient.get(`/tweets/user/${username}`);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

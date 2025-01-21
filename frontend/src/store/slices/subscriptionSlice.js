@@ -11,7 +11,8 @@ export const toggleSubscription = createAsyncThunk(
   "subscription/toggleSubscription",
   async (channelId, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post(`/subscription/c/${channelId}`);
+      const response = await apiClient.post(`/subscriptions/c/${channelId}`);
+      console.log(response)
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -26,8 +27,8 @@ export const getUserChannelSubscribers = createAsyncThunk(
   "subscription/getUserChannelSubscribers",
   async (channelId, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/subscription/c/${channelId}`);
-      return response.data.data;
+      const response = await apiClient.get(`/subscriptions/c/${channelId}`);
+      return response.data.data.subscribers;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
@@ -39,10 +40,12 @@ export const getUserChannelSubscribers = createAsyncThunk(
 
 export const getSubscribedChannels = createAsyncThunk(
   "subscription/getSubscribedChannels",
-  async (subscriberId, { rejectWithValue }) => {
+  async (subscriberUsername, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/subscription/u/${subscriberId}`);
-      return response.data.data;
+      const response = await apiClient.get(
+        `/subscriptions/u/${subscriberUsername}`
+      );
+      return response.data.data.channels;
     } catch (error) {
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);

@@ -6,6 +6,7 @@ import ChangePassword from "./ChangePassword";
 import VideoUpload from "./VideoUpload";
 import ChannelDashboard from "./ChannelDashboard";
 import EditVideo from "./EditVideo";
+import ChannelProfile from "./ChannelProfile";
 
 export {
   Home,
@@ -16,4 +17,5 @@ export {
   VideoUpload,
   ChannelDashboard,
   EditVideo,
+  ChannelProfile,
 };

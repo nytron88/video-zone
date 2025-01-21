@@ -107,6 +107,21 @@ export const updateCover = createAsyncThunk(
   }
 );
 
+export const getUserChannelProfile = createAsyncThunk(
+  "user/getUserChannelProfile",
+  async (username, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get(`/users/channel/${username}`);
+      return response.data.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,

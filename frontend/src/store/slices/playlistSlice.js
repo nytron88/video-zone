@@ -69,10 +69,10 @@ export const deletePlaylist = createAsyncThunk(
 
 export const addVideoToPlaylist = createAsyncThunk(
   "playlist/addVideoToPlaylist",
-  async (data, { rejectWithValue }) => {
+  async (username, { rejectWithValue }) => {
     try {
       const response = await apiClient.post(
-        `/playlists/add/${data.playlistId}/${data.videoId}`,
+        `/playlists/add/${data.playlistId}/${username}`,
         data
       );
       return response.data.data;
@@ -104,9 +104,9 @@ export const removeVideoFromPlaylist = createAsyncThunk(
 
 export const getUserPlaylists = createAsyncThunk(
   "playlist/getUserPlaylists",
-  async (data, { rejectWithValue }) => {
+  async (username, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/playlists/user/${data._id}`);
+      const response = await apiClient.get(`/playlist/user/${username}`);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
