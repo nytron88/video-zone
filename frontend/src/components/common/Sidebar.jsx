@@ -8,10 +8,11 @@ import {
   History,
   ListVideo,
   Home,
+  User,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-function Sidebar({ isExpanded, setIsExpanded }) {
+function Sidebar({ isExpanded, setIsExpanded, username }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -24,11 +25,9 @@ function Sidebar({ isExpanded, setIsExpanded }) {
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: UserCheck, label: "Subscriptions", path: "/subscriptions" },
+    { icon: User, label: "Profile", path: `/channel/${username}` },
     { icon: Heart, label: "Liked Videos", path: "/liked" },
-    { icon: ListVideo, label: "Your Playlists", path: "/playlists" },
     { icon: History, label: "Watch History", path: "/history" },
-    { icon: Video, label: "Your Videos", path: "/videos" },
   ];
 
   return (

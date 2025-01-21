@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { searchVideosAndChannels } from "../../store/slices/videoSlice";
 import { Search } from "lucide-react";
 
 const SearchBar = ({
@@ -12,16 +14,44 @@ const SearchBar = ({
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef(null);
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const timeout = setTimeout(async () => {
       if (value.trim().length > 0) {
-        setResults([
-          `${value} result 1`,
-          `${value} result 2`,
-          `${value} result 3`,
-        ]);
-        setIsOpen(true);
+        try {
+          setLoading(true);
+          const response = await dispatch(
+            searchVideosAndChannels({
+              query: value,
+              type: "all",
+              limit: 10,
+              sortBy: "score",
+              page: 1,
+            })
+          ).unwrap();
+
+          setResults([
+            ...(response.videos || []).map((video) => ({
+              type: "video",
+              id: video._id,
+              label: video.title,
+            })),
+            ...(response.channels || []).map((channel) => ({
+              type: "channel",
+              id: channel._id,
+              label: channel.username,
+            })),
+          ]);
+          setIsOpen(true);
+        } catch (error) {
+          setResults([]);
+          setIsOpen(false);
+          console.error("Error fetching search results:", error);
+        } finally {
+          setLoading(false);
+        }
       } else {
         setResults([]);
         setIsOpen(false);
@@ -29,7 +59,7 @@ const SearchBar = ({
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [value]);
+  }, [value, dispatch]);
 
   useEffect(() => {
     if (!isMobileSearch) {
@@ -50,17 +80,21 @@ const SearchBar = ({
     setIsOpen(false);
   };
 
-  const ResultsList = () =>
-    results.map((result, index) => (
-      <div
-        key={index}
-        onClick={() => handleResultClick(result)}
-        className="px-4 py-3 text-gray-300 hover:bg-gray-800 cursor-pointer flex items-center gap-3"
-      >
-        <Search className="w-4 h-4 text-gray-400" />
-        {result}
-      </div>
-    ));
+  const ResultsList = () => (
+    <>
+      {results.map((result, index) => (
+        <div
+          key={index}
+          onClick={() => handleResultClick(result)}
+          className="px-4 py-3 text-gray-300 hover:bg-gray-800 cursor-pointer flex items-center gap-3"
+        >
+          <Search className="w-4 h-4 text-gray-400" />
+          <span>{result.label}</span>
+          <span className="text-sm text-gray-500">({result.type})</span>
+        </div>
+      ))}
+    </>
+  );
 
   return (
     <div className="relative w-full" ref={searchRef}>
@@ -91,6 +125,12 @@ const SearchBar = ({
       {isMobileSearch && isOpen && results.length > 0 && (
         <div className="fixed left-0 right-0 bg-black border-t border-gray-800 mt-4">
           <ResultsList />
+        </div>
+      )}
+
+      {loading && (
+        <div className="absolute top-full left-0 right-0 z-50 bg-gray-800 border border-gray-700 rounded-md shadow-md mt-1 max-h-60 overflow-y-auto flex items-center justify-center py-2 text-gray-400">
+          Loading...
         </div>
       )}
     </div>

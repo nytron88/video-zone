@@ -6,13 +6,18 @@ import { Menu } from "lucide-react";
 
 function Layout() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { data: userData } = useSelector((state) => state.user);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   return (
     <>
       {isAuthenticated ? (
         <div className="flex pt-16">
-          <Sidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+          <Sidebar
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+            username={userData.username}
+          />
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             aria-label="Open Sidebar"
