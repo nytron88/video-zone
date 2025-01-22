@@ -110,7 +110,9 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 });
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-  const likedVideos = await Like.aggregate([
+  const { page = 1, limit = 10 } = req.query;
+
+  const aggregateQuery = [
     {
       $match: {
         likedBy: new mongoose.Types.ObjectId(req.user.id),
@@ -125,6 +127,11 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         as: "video",
         pipeline: [
           {
+            $match: {
+              isPublished: true,
+            },
+          },
+          {
             $lookup: {
               from: "users",
               localField: "owner",
@@ -135,7 +142,11 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                   $project: {
                     _id: 1,
                     username: 1,
+                    fullname: 1,
                     avatar: 1,
+                    coverImage: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
                   },
                 },
               ],
@@ -147,12 +158,41 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         ],
       },
     },
-  ]);
+    {
+      $unwind: "$video",
+    },
+    {
+      $replaceRoot: { newRoot: "$video" },
+    },
+  ];
+
+  const options = {
+    page: parseInt(page, 10),
+    limit: parseInt(limit, 10),
+  };
+
+  const result = await Like.aggregatePaginate(
+    Like.aggregate(aggregateQuery),
+    options
+  );
+
+  const responseData = {
+    videos: result.docs,
+    totalVideos: result.totalDocs,
+    limit: result.limit,
+    currentPage: result.page,
+    totalPages: result.totalPages,
+    pagingCounter: result.pagingCounter,
+    hasPrevPage: result.hasPrevPage,
+    hasNextPage: result.hasNextPage,
+    prevPage: result.prevPage,
+    nextPage: result.nextPage,
+  };
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, likedVideos, "Liked videos fetched successfully")
+      new ApiResponse(200, responseData, "Liked videos fetched successfully")
     );
 });
 

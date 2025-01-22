@@ -20,6 +20,7 @@ import {
   ChannelDashboard,
   EditVideo,
   ChannelProfile,
+  LikedVideos,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -87,6 +88,14 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <ChannelProfile />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="liked"
+        element={
+          <AuthLayout authentication>
+            <LikedVideos />
           </AuthLayout>
         }
       />

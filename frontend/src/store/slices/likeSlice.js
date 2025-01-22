@@ -54,9 +54,23 @@ export const toggleTweetLike = createAsyncThunk(
 
 export const getLikedVideos = createAsyncThunk(
   "like/getLikedVideos",
-  async (_, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
+    let url = "/likes/videos";
     try {
-      const response = await apiClient.get(`likes/videos`);
+      const queryParams = Object.entries(data || {})
+        .filter(
+          ([_, value]) => value !== undefined && value !== null && value !== ""
+        )
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        )
+        .join("&");
+
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+      const response = await apiClient.get(url);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
-import { getAllVideos } from "../../store/slices/videoSlice";
-import VideoCard from "./VideoCard";
-import LoadingSkeleton from "./LoadingSkeleton";
 import { throttle } from "lodash";
+import LoadingSkeleton from "./LoadingSkeleton";
 
-function VideoDisplay({
+function ContentDisplay({
+  fetchAction,
+  renderItem,
   limit = 16,
-  sortBy = "views",
-  sortType = "desc",
-  userId,
+  additionalParams = { sortBy: "createdAt", sortType: "desc" },
+  itemName = "item",
 }) {
   const dispatch = useDispatch();
-  const [videos, setVideos] = useState([]);
+  const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -21,54 +20,53 @@ function VideoDisplay({
   const [error, setError] = useState(null);
   const [seenIds] = useState(new Set());
 
-  const handleImageLoad = useCallback((videoId) => {
-    setVideos((prev) =>
-      prev.map((v) => (v._id === videoId ? { ...v, loaded: true } : v))
+  const handleItemLoad = useCallback((itemId) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item._id === itemId ? { ...item, loaded: true } : item
+      )
     );
   }, []);
 
-  const fetchVideos = useCallback(
+  const fetchItems = useCallback(
     throttle(async () => {
       if (loading || !hasMore) return;
 
       setLoading(true);
       try {
-        const fetchedVideosData = await dispatch(
-          getAllVideos({
+        const fetchedItemsData = await dispatch(
+          fetchAction({
             page,
             limit,
-            sortBy,
-            sortType,
-            userId,
-            isPublished: true,
+            ...additionalParams,
           })
         ).unwrap();
 
-        setVideos((prevVideos) => {
-          const newUniqueVideos = fetchedVideosData.videos
-            .filter((video) => {
-              if (seenIds.has(video._id)) {
+        setItems((prevItems) => {
+          const newUniqueItems = fetchedItemsData.videos
+            .filter((item) => {
+              if (seenIds.has(item._id)) {
                 return false;
               }
-              seenIds.add(video._id);
+              seenIds.add(item._id);
               return true;
             })
-            .map((video) => ({
-              ...video,
+            .map((item) => ({
+              ...item,
               loaded: false,
             }));
 
-          if (newUniqueVideos.length === 0) {
+          if (newUniqueItems.length === 0) {
             setHasMore(false);
-            return prevVideos;
+            return prevItems;
           }
 
-          return [...prevVideos, ...newUniqueVideos];
+          return [...prevItems, ...newUniqueItems];
         });
 
         if (
-          !fetchedVideosData.hasNextPage ||
-          fetchedVideosData.videos.length < limit
+          !fetchedItemsData.hasNextPage ||
+          fetchedItemsData.videos.length < limit
         ) {
           setHasMore(false);
         }
@@ -82,29 +80,24 @@ function VideoDisplay({
         setInitialLoading(false);
       }
     }, 1000),
-    [dispatch, page, hasMore, loading, seenIds]
+    [dispatch, page, hasMore, loading, seenIds, fetchAction, additionalParams]
   );
 
   useEffect(() => {
-    fetchVideos();
-    return () => fetchVideos.cancel();
+    fetchItems();
+    return () => fetchItems.cancel();
   }, []);
 
   const LoadingIndicator = () => (
     <div className="flex justify-center items-center w-full py-4 col-span-full">
       <div className="flex space-x-2">
-        <div
-          className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
-          style={{ animationDelay: "0ms" }}
-        ></div>
-        <div
-          className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
-          style={{ animationDelay: "150ms" }}
-        ></div>
-        <div
-          className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
-          style={{ animationDelay: "300ms" }}
-        ></div>
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
+            style={{ animationDelay: `${i * 150}ms` }}
+          ></div>
+        ))}
       </div>
     </div>
   );
@@ -113,7 +106,7 @@ function VideoDisplay({
     return (
       <div className="min-h-screen bg-[#121212] text-white p-6">
         <div className="text-red-500 text-center p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-          Error loading videos: {error}
+          Error loading {itemName}s: {error}
         </div>
       </div>
     );
@@ -125,7 +118,7 @@ function VideoDisplay({
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           role="grid"
-          aria-label="Loading videos"
+          aria-label={`Loading ${itemName}s`}
         >
           {Array.from({ length: limit }).map((_, index) => (
             <LoadingSkeleton key={`skeleton-${index}`} />
@@ -133,28 +126,33 @@ function VideoDisplay({
         </div>
       ) : (
         <InfiniteScroll
-          dataLength={videos.length}
-          next={fetchVideos}
+          dataLength={items.length}
+          next={fetchItems}
           hasMore={hasMore}
           loader={<LoadingIndicator />}
           endMessage={
-            <p className="text-center text-gray-500 p-4" role="status">
-              You've reached the end
-            </p>
+            items.length > 0 ? (
+              <p className="text-center text-gray-500 p-4" role="status">
+                You've reached the end
+              </p>
+            ) : (
+              <p
+                className="text-center text-lg text-gray-400 p-4"
+                role="status"
+              >
+                No {itemName}s found
+              </p>
+            )
           }
         >
           <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
             role="grid"
-            aria-label="Video grid"
+            aria-label={`${itemName} grid`}
           >
-            {videos.map((video) => (
-              <VideoCard
-                key={video._id}
-                video={video}
-                onImageLoad={handleImageLoad}
-              />
-            ))}
+            {items.map((item) =>
+              renderItem({ item, onItemLoad: handleItemLoad })
+            )}
           </div>
         </InfiniteScroll>
       )}
@@ -162,4 +160,4 @@ function VideoDisplay({
   );
 }
 
-export default VideoDisplay;
+export default ContentDisplay;

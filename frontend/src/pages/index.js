@@ -7,6 +7,7 @@ import VideoUpload from "./VideoUpload";
 import ChannelDashboard from "./ChannelDashboard";
 import EditVideo from "./EditVideo";
 import ChannelProfile from "./ChannelProfile";
+import LikedVideos from "./LikedVideos";
 
 export {
   Home,
@@ -18,4 +19,5 @@ export {
   ChannelDashboard,
   EditVideo,
   ChannelProfile,
+  LikedVideos,
 };

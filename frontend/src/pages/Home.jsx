@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, VideoDisplay, Loader } from "../components";
+import { Button, VideoGrid, Loader } from "../components";
 
 function Home() {
   const { loading: userLoading } = useSelector((state) => state.user);
@@ -10,7 +10,7 @@ function Home() {
   if (userLoading) return <Loader />;
 
   return isAuthenticated ? (
-    <VideoDisplay />
+    <VideoGrid />
   ) : (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black p-6">
       <div className="w-full max-w-2xl mx-auto text-center space-y-6">
