@@ -41,7 +41,6 @@ function Header() {
 
   const handleSearchIconClick = () => {
     if (searchQuery.trim()) {
-      console.log("Performing search for:", searchQuery);
       setIsSearchExpanded(false);
     }
   };

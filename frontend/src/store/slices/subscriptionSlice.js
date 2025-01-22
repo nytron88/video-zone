@@ -12,7 +12,6 @@ export const toggleSubscription = createAsyncThunk(
   async (channelId, { rejectWithValue }) => {
     try {
       const response = await apiClient.post(`/subscriptions/c/${channelId}`);
-      console.log(response)
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

@@ -11,7 +11,7 @@ export const createPlaylist = createAsyncThunk(
   "playlist/createPlaylist",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/playlists", data);
+      const response = await apiClient.post("/playlist", data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -26,7 +26,7 @@ export const getPlaylistById = createAsyncThunk(
   "playlist/getPlaylistById",
   async (playlistId, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/playlists/${playlistId}`);
+      const response = await apiClient.get(`/playlist/${playlistId}`);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -41,7 +41,7 @@ export const updatePlaylist = createAsyncThunk(
   "playlist/updatePlaylist",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.patch(`/playlists/${data._id}`, data);
+      const response = await apiClient.patch(`/playlist/${data._id}`, data);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -56,7 +56,7 @@ export const deletePlaylist = createAsyncThunk(
   "playlist/deletePlaylist",
   async (playlistId, { rejectWithValue }) => {
     try {
-      const response = await apiClient.delete(`/playlists/${playlistId}`);
+      const response = await apiClient.delete(`/playlist/${playlistId}`);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -72,7 +72,7 @@ export const addVideoToPlaylist = createAsyncThunk(
   async (username, { rejectWithValue }) => {
     try {
       const response = await apiClient.post(
-        `/playlists/add/${data.playlistId}/${username}`,
+        `/playlist/add/${data.playlistId}/${username}`,
         data
       );
       return response.data.data;
@@ -90,7 +90,7 @@ export const removeVideoFromPlaylist = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await apiClient.delete(
-        `/playlists/remove/${data.playlistId}/${data.videoId}`
+        `/playlist/remove/${data.playlistId}/${data.videoId}`
       );
       return response.data.data;
     } catch (error) {

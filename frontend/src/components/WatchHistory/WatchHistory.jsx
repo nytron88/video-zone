@@ -145,7 +145,7 @@ function WatchHistory() {
           </p>
         </div>
 
-        <ToastContainer theme="dark" position="bottom-right" />
+        <ToastContainer />
 
         {watchHistory.length === 0 && !loading ? (
           <EmptyState />

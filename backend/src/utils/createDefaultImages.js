@@ -42,8 +42,6 @@ async function generateCoverImage(width = 1200, height = 300) {
   const buffer = canvas.toBuffer();
   const uploadedFile = await uploadOnCloudinary(buffer);
 
-  console.log(uploadedFile);
-
   return uploadedFile;
 }
 

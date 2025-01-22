@@ -22,6 +22,9 @@ import {
   ChannelProfile,
   LikedVideos,
   WatchHistory,
+  VideoDisplay,
+  PostTweet,
+  CreatePlaylist,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -105,6 +108,30 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <WatchHistory />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="video/:videoId"
+        element={
+          <AuthLayout authentication>
+            <VideoDisplay />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="post-tweet"
+        element={
+          <AuthLayout authentication>
+            <PostTweet />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="create-playlist"
+        element={
+          <AuthLayout authentication>
+            <CreatePlaylist />
           </AuthLayout>
         }
       />

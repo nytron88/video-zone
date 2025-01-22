@@ -9,6 +9,9 @@ import EditVideo from "./EditVideo";
 import ChannelProfile from "./ChannelProfile";
 import LikedVideos from "./LikedVideos";
 import WatchHistory from "./WatchHistory";
+import VideoDisplay from "./VideoDisplay";
+import PostTweet from "./PostTweet";
+import CreatePlaylist from "./CreatePlaylist";
 
 export {
   Home,
@@ -22,4 +25,7 @@ export {
   ChannelProfile,
   LikedVideos,
   WatchHistory,
+  VideoDisplay,
+  PostTweet,
+  CreatePlaylist,
 };

@@ -25,6 +25,9 @@ import ContentDisplay from "./ContentDisplay/ContentDisplay";
 import VideoCard from "./ContentDisplay/VideoCard";
 import VideoGrid from "./VideoGrid/VideoGrid";
 import WatchHistory from "./WatchHistory/WatchHistory";
+import VideoDisplay from "./VideoDisplay/VideoDisplay";
+import PostTweet from "./PostTweet/PostTweet";
+import CreatePlaylist from "./CreatePlaylist/CreatePlaylist";
 
 export {
   Login,
@@ -54,4 +57,7 @@ export {
   VideoCard,
   VideoGrid,
   WatchHistory,
+  VideoDisplay,
+  PostTweet,
+  CreatePlaylist,
 };

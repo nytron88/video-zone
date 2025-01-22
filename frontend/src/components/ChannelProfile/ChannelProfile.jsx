@@ -140,48 +140,74 @@ const ChannelProfile = () => {
     </div>
   );
 
-  const renderPlaylists = () =>
-    playlists.length === 0 ? (
-      <EmptyStateMessage message="No playlists found" />
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {playlists.map((playlist) => (
+  const renderPlaylists = () => (
+    <div className="space-y-4">
+      {currentUserData.username === username && (
+        <div className="flex justify-end mb-4">
           <Link
-            key={playlist._id}
-            to={`/playlist/${playlist._id}`}
-            className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors duration-300"
+            to="/create-playlist"
+            className="inline-flex items-center px-4 py-2 bg-violet-400 text-white text-sm font-medium rounded-full hover:bg-violet-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900"
           >
-            <div className="aspect-video relative bg-gray-900">
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <span className="text-white text-lg font-medium">
-                  {playlist.videos.length} videos
-                </span>
-              </div>
-            </div>
-            <div className="p-4">
-              <h3 className="text-white font-medium truncate">
-                {playlist.name}
-              </h3>
-              {playlist.description && (
-                <p className="text-gray-400 text-sm truncate">
-                  {playlist.description}
-                </p>
-              )}
-              <div className="text-sm text-gray-400 mt-1">
-                Updated {new Date(playlist.updatedAt).toLocaleDateString()}
-              </div>
-            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Create Playlist
           </Link>
-        ))}
-      </div>
-    );
+        </div>
+      )}
+      {playlists.length === 0 ? (
+        <EmptyStateMessage message="No playlists found" />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {playlists.map((playlist) => (
+            <Link
+              key={playlist._id}
+              to={`/playlist/${playlist._id}`}
+              className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors duration-300"
+            >
+              <div className="aspect-video relative bg-gray-900">
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                  <span className="text-white text-lg font-medium">
+                    {playlist.videos.length} videos
+                  </span>
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="text-white font-medium truncate">
+                  {playlist.name}
+                </h3>
+                {playlist.description && (
+                  <p className="text-gray-400 text-sm truncate">
+                    {playlist.description}
+                  </p>
+                )}
+                <div className="text-sm text-gray-400 mt-1">
+                  Updated {new Date(playlist.updatedAt).toLocaleDateString()}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+      ;
+    </div>
+  );
 
   const renderTweets = () => (
     <div className="space-y-4">
       {currentUserData.username === username && (
         <div className="flex justify-end mb-4">
           <Link
-            to="/create-tweet"
+            to="/post-tweet"
             className="inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-full hover:bg-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
           >
             <svg
@@ -310,7 +336,7 @@ const ChannelProfile = () => {
                 <AvatarBanner avatarPreview={channelDetails.avatar} />
               </div>
               <div className="text-center md:text-left">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white sm:mt-8">
                   {channelDetails.fullname}
                 </h1>
                 <p className="text-gray-400 mt-1">@{channelDetails.username}</p>
