@@ -176,28 +176,53 @@ const ChannelProfile = () => {
       </div>
     );
 
-  const renderTweets = () =>
-    tweets.length === 0 ? (
-      <EmptyStateMessage message="No tweets found" />
-    ) : (
-      <div className="grid grid-cols-1 gap-4">
-        {tweets.map((tweet) => (
+  const renderTweets = () => (
+    <div className="space-y-4">
+      {currentUserData.username === username && (
+        <div className="flex justify-end mb-4">
           <Link
-            className="bg-gray-800 p-4 rounded-lg"
-            key={tweet._id}
-            to={`/tweet/${tweet._id}`}
+            to="/create-tweet"
+            className="inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-full hover:bg-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
           >
-            <p className="text-white text-base mb-2">{tweet.content}</p>
-            <div className="flex justify-between text-sm text-gray-400">
-              <span>{new Date(tweet.createdAt).toLocaleDateString()}</span>
-              <div>
-                <span className="mr-4">{tweet.likes} likes</span>
-              </div>
-            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Create Tweet
           </Link>
-        ))}
-      </div>
-    );
+        </div>
+      )}
+      {tweets.length === 0 ? (
+        <EmptyStateMessage message="No tweets found" />
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {tweets.map((tweet) => (
+            <Link
+              className="bg-gray-800 p-4 rounded-lg"
+              key={tweet._id}
+              to={`/tweet/${tweet._id}`}
+            >
+              <p className="text-white text-base mb-2">{tweet.content}</p>
+              <div className="flex justify-between text-sm text-gray-400">
+                <span>{new Date(tweet.createdAt).toLocaleDateString()}</span>
+                <div>
+                  <span className="mr-4">{tweet.likes} likes</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   const renderSubscriptions = () =>
     subscribed.length === 0 ? (
@@ -219,7 +244,7 @@ const ChannelProfile = () => {
                 @{user.username}
               </p>
               <p className="text-gray-500 text-sm mt-1">
-                {user.subscribersCount?.toLocaleString() || 0} subscribers
+                {user.subscribers?.toLocaleString() || 0} subscribers
               </p>
             </div>
           </Link>

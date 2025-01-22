@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { searchVideosAndChannels } from "../../store/slices/videoSlice";
 import { Search } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const SearchBar = ({
   value,
@@ -37,6 +38,7 @@ const SearchBar = ({
               type: "video",
               id: video._id,
               label: video.title,
+              owner: video.owner.username,
             })),
             ...(response.channels || []).map((channel) => ({
               type: "channel",
@@ -77,21 +79,36 @@ const SearchBar = ({
 
   const handleResultClick = (result) => {
     onResultClick(result);
+    onChange({ target: { value: result.label } });
     setIsOpen(false);
   };
 
   const ResultsList = () => (
     <>
       {results.map((result, index) => (
-        <div
+        <Link
           key={index}
+          to={
+            result.type === "video"
+              ? `/video/${result.id}`
+              : `/channel/${result.label}`
+          }
           onClick={() => handleResultClick(result)}
-          className="px-4 py-3 text-gray-300 hover:bg-gray-800 cursor-pointer flex items-center gap-3"
+          className="px-4 py-3 text-gray-300 hover:bg-gray-800 cursor-pointer flex items-center gap-3 transition-colors"
         >
           <Search className="w-4 h-4 text-gray-400" />
-          <span>{result.label}</span>
-          <span className="text-sm text-gray-500">({result.type})</span>
-        </div>
+          <div className="flex flex-col">
+            <span className="font-medium">
+              {result.label}
+              {result.type === "video" && (
+                <span className="text-sm text-gray-400 ml-2">
+                  By {result.owner}
+                </span>
+              )}
+            </span>
+            <span className="text-xs text-gray-500">({result.type})</span>
+          </div>
+        </Link>
       ))}
     </>
   );
