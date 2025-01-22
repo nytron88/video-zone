@@ -20,7 +20,7 @@ const ChannelProfile = () => {
   const [loading, setLoading] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [tweets, setTweets] = useState([]);
-  const [following, setFollowing] = useState([]);
+  const [subscribed, setSubscribed] = useState([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
   const { data: currentUserData } = useSelector((state) => state.user);
@@ -29,7 +29,7 @@ const ChannelProfile = () => {
     { id: "videos", label: "Videos" },
     { id: "playlist", label: "Playlist" },
     { id: "tweets", label: "Tweets" },
-    { id: "following", label: "Following" },
+    { id: "subscriptions", label: "Subscriptions" },
   ];
 
   const LoadingIndicator = () => (
@@ -80,12 +80,12 @@ const ChannelProfile = () => {
             setTweets(response);
           }
           break;
-        case "following":
-          if (following.length === 0) {
+        case "subscriptions":
+          if (subscribed.length === 0) {
             const response = await dispatch(
               getSubscribedChannels(username)
             ).unwrap();
-            setFollowing(response);
+            setSubscribed(response);
           }
           break;
         default:
@@ -122,7 +122,7 @@ const ChannelProfile = () => {
     setIsReloading(true);
     setPlaylists([]);
     setTweets([]);
-    setFollowing([]);
+    setSubscribed([]);
     setActiveTab("videos");
 
     const initializeProfile = async () => {
@@ -154,7 +154,7 @@ const ChannelProfile = () => {
             <div className="aspect-video relative bg-gray-900">
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <span className="text-white text-lg font-medium">
-                  {playlist.videosCount} videos
+                  {playlist.videos.length} videos
                 </span>
               </div>
             </div>
@@ -162,6 +162,11 @@ const ChannelProfile = () => {
               <h3 className="text-white font-medium truncate">
                 {playlist.name}
               </h3>
+              {playlist.description && (
+                <p className="text-gray-400 text-sm truncate">
+                  {playlist.description}
+                </p>
+              )}
               <div className="text-sm text-gray-400 mt-1">
                 Updated {new Date(playlist.updatedAt).toLocaleDateString()}
               </div>
@@ -177,26 +182,29 @@ const ChannelProfile = () => {
     ) : (
       <div className="grid grid-cols-1 gap-4">
         {tweets.map((tweet) => (
-          <div key={tweet._id} className="bg-gray-800 p-4 rounded-lg">
+          <Link
+            className="bg-gray-800 p-4 rounded-lg"
+            key={tweet._id}
+            to={`/tweet/${tweet._id}`}
+          >
             <p className="text-white text-base mb-2">{tweet.content}</p>
             <div className="flex justify-between text-sm text-gray-400">
               <span>{new Date(tweet.createdAt).toLocaleDateString()}</span>
               <div>
                 <span className="mr-4">{tweet.likes} likes</span>
-                <span>{tweet.retweets} retweets</span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     );
 
-  const renderFollowing = () =>
-    following.length === 0 ? (
-      <EmptyStateMessage message="Not following anyone yet" />
+  const renderSubscriptions = () =>
+    subscribed.length === 0 ? (
+      <EmptyStateMessage message="Not subscribed to anyone yet" />
     ) : (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {following.map((user) => (
+        {subscribed.map((user) => (
           <Link
             key={user._id}
             to={`/channel/${user.username}`}
@@ -252,8 +260,8 @@ const ChannelProfile = () => {
                 return renderPlaylists();
               case "tweets":
                 return renderTweets();
-              case "following":
-                return renderFollowing();
+              case "subscriptions":
+                return renderSubscriptions();
               default:
                 return null;
             }
@@ -293,7 +301,7 @@ const ChannelProfile = () => {
                       {channelDetails.channelsSubscribedToCount?.toLocaleString() ||
                         0}
                     </span>
-                    Following
+                    Subscriptions
                   </span>
                 </div>
               </div>
