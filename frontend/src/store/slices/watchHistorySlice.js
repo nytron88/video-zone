@@ -9,9 +9,23 @@ const initialState = {
 
 export const getUserWatchHistory = createAsyncThunk(
   "watchHistory/getUserWatchHistory",
-  async (_, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
+    let url = "/watchHistory";
     try {
-      const response = await apiClient.get(`/watchHistory`);
+      const queryParams = Object.entries(data || {})
+        .filter(
+          ([_, value]) => value !== undefined && value !== null && value !== ""
+        )
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        )
+        .join("&");
+
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+      const response = await apiClient.get(url);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

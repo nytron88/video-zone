@@ -20,10 +20,11 @@ import VideoUpload from "./VideoUpload/VideoUpload";
 import ChannelDashboard from "./ChannelDashboard/ChannelDashboard";
 import EditVideo from "./EditVideo/EditVideo";
 import ChannelProfile from "./ChannelProfile/ChannelProfile";
-import LikedVideos from "./Auth/LikedVideos/LikedVideos";
+import LikedVideos from "./LikedVideos/LikedVideos";
 import ContentDisplay from "./ContentDisplay/ContentDisplay";
 import VideoCard from "./ContentDisplay/VideoCard";
 import VideoGrid from "./VideoGrid/VideoGrid";
+import WatchHistory from "./WatchHistory/WatchHistory";
 
 export {
   Login,
@@ -52,4 +53,5 @@ export {
   ContentDisplay,
   VideoCard,
   VideoGrid,
+  WatchHistory,
 };

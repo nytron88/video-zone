@@ -56,8 +56,6 @@ const getUserTweets = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // const tweets = await Tweet.find({ owner: user._id });
-
   res
     .status(200)
     .json(new ApiResponse(200, tweets, "Tweets fetched successfully"));

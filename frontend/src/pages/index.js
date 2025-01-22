@@ -8,6 +8,7 @@ import ChannelDashboard from "./ChannelDashboard";
 import EditVideo from "./EditVideo";
 import ChannelProfile from "./ChannelProfile";
 import LikedVideos from "./LikedVideos";
+import WatchHistory from "./WatchHistory";
 
 export {
   Home,
@@ -20,4 +21,5 @@ export {
   EditVideo,
   ChannelProfile,
   LikedVideos,
+  WatchHistory,
 };

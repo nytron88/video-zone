@@ -7,7 +7,9 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 
 const getUserWatchHistory = asyncHandler(async (req, res) => {
-  const user = await User.aggregate([
+  const { page = 1, limit = 10 } = req.query;
+
+  const aggregateQuery = [
     {
       $match: {
         _id: new mongoose.Types.ObjectId(req.user?._id),
@@ -54,28 +56,57 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
           },
           {
             $project: {
-              video: 1,
-              _id: 0,
-            },
-          },
-          {
-            $addFields: {
               video: { $arrayElemAt: ["$video", 0] },
+              updatedAt: 1,
             },
           },
         ],
       },
     },
     {
+      $unwind: "$watchHistory",
+    },
+    {
+      $sort: { "watchHistory.updatedAt": -1 },
+    },
+    {
       $addFields: {
-        watchHistory: "$watchHistory",
+        "watchHistory.video.watchedAt": "$watchHistory.updatedAt",
       },
     },
-  ]);
+    {
+      $replaceRoot: { newRoot: "$watchHistory.video" },
+    },
+  ];
+
+  const options = {
+    page: parseInt(page, 10),
+    limit: parseInt(limit, 10),
+  };
+
+  const result = await User.aggregatePaginate(
+    User.aggregate(aggregateQuery),
+    options
+  );
+
+  const responseData = {
+    videos: result.docs,
+    totalVideos: result.totalDocs,
+    limit: result.limit,
+    currentPage: result.page,
+    totalPages: result.totalPages,
+    pagingCounter: result.pagingCounter,
+    hasPrevPage: result.hasPrevPage,
+    hasNextPage: result.hasNextPage,
+    prevPage: result.prevPage,
+    nextPage: result.nextPage,
+  };
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user[0].watchHistory, "Watch history found"));
+    .json(
+      new ApiResponse(200, responseData, "Watch history fetched successfully")
+    );
 });
 
 const deleteVideoFromWatchHistory = asyncHandler(async (req, res) => {

@@ -1,7 +1,7 @@
 import React from "react";
-import { getLikedVideos } from "../../../store/slices/likeSlice";
-import VideoCard from "../../ContentDisplay/VideoCard";
-import ContentDisplay from "../../ContentDisplay/ContentDisplay";
+import { getLikedVideos } from "../../store/slices/likeSlice";
+import VideoCard from "../ContentDisplay/VideoCard";
+import ContentDisplay from "../ContentDisplay/ContentDisplay";
 
 function LikedVideos({ limit = 16, sortBy = "views", sortType = "desc" }) {
   const renderVideoCard = ({ item: video, onItemLoad }) => (
