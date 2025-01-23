@@ -9,9 +9,27 @@ const initialState = {
 
 export const getVideoComments = createAsyncThunk(
   "comment/getVideoComments",
-  async (videoId, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
+    let url = `comments/v/${data.videoId}`;
     try {
-      const response = await apiClient.get(`comments/v/${videoId}`);
+      const queryParams = Object.entries(data || {})
+        .filter(
+          ([key, value]) =>
+            key !== "videoId" &&
+            value !== undefined &&
+            value !== null &&
+            value !== ""
+        )
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        )
+        .join("&");
+
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+      const response = await apiClient.get(url);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -90,11 +108,11 @@ export const deleteComment = createAsyncThunk(
 
 export const updateComment = createAsyncThunk(
   "comment/updateComment",
-  async (comment, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       const response = await apiClient.patch(
-        `comments/c/${comment.commentId}`,
-        comment
+        `comments/c/${data.commentId}`,
+        data
       );
       return response.data.data;
     } catch (error) {

@@ -51,6 +51,13 @@ const getVideoComments = asyncHandler(async (req, res) => {
     {
       $addFields: {
         totalLikes: { $size: "$likes" },
+        isLiked: {
+          $cond: {
+            if: { $in: [req?.user._id, "$likes.likedBy"] },
+            then: true,
+            else: false,
+          },
+        },
       },
     },
     {
@@ -58,6 +65,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
         content: 1,
         createdAt: 1,
         totalLikes: 1,
+        isLiked: 1,
         owner: {
           username: 1,
           avatar: 1,
@@ -88,19 +96,20 @@ const getVideoComments = asyncHandler(async (req, res) => {
     options
   );
 
-  return res.status(200).json({
-    statusCode: 200,
-    data: {
-      comments: result.comments,
-      pagination: {
-        currentPage: result.currentPage,
-        totalPages: result.totalPages,
-        totalComments: result.totalComments,
-      },
+  let responseData = {
+    comments: result.comments,
+    pagination: {
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
+      totalComments: result.totalComments,
     },
-    message: "Video comments fetched successfully",
-    success: true,
-  });
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, responseData, "Video comments fetched successfully")
+    );
 });
 
 const getTweetComments = asyncHandler(async (req, res) => {
@@ -187,19 +196,20 @@ const getTweetComments = asyncHandler(async (req, res) => {
     options
   );
 
-  return res.status(200).json({
-    statusCode: 200,
-    data: {
-      comments: result.comments,
-      pagination: {
-        currentPage: result.currentPage,
-        totalPages: result.totalPages,
-        totalComments: result.totalComments,
-      },
+  let responseData = {
+    comments: result.comments,
+    pagination: {
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
+      totalComments: result.totalComments,
     },
-    message: "Tweet comments fetched successfully",
-    success: true,
-  });
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, responseData, "Tweet comments fetched successfully")
+    );
 });
 
 const addVideoComment = asyncHandler(async (req, res) => {

@@ -11,7 +11,7 @@ function Layout() {
 
   return (
     <>
-      {isAuthenticated ? (
+      {isAuthenticated && userData ? (
         <div className="flex pt-16">
           <Sidebar
             isExpanded={isExpanded}
