@@ -22,6 +22,21 @@ export const createTweet = createAsyncThunk(
   }
 );
 
+export const getTweetById = createAsyncThunk(
+  "tweet/getTweetById",
+  async (tweetId, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get(`/tweets/${tweetId}`);
+      return response.data.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An unexpected error occurred. Please try again.");
+    }
+  }
+);
+
 export const getUserTweets = createAsyncThunk(
   "tweet/getUserTweets",
   async (username, { rejectWithValue }) => {
@@ -81,6 +96,18 @@ const tweetSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(createTweet.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getTweetById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTweetById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(getTweetById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

@@ -10,12 +10,12 @@ const initialState = {
 export const getVideoComments = createAsyncThunk(
   "comment/getVideoComments",
   async (data, { rejectWithValue }) => {
-    let url = `comments/v/${data.videoId}`;
+    let url = `comments/v/${data.identifier}`;
     try {
       const queryParams = Object.entries(data || {})
         .filter(
           ([key, value]) =>
-            key !== "videoId" &&
+            key !== "identifier" &&
             value !== undefined &&
             value !== null &&
             value !== ""
@@ -45,7 +45,7 @@ export const addVideoComment = createAsyncThunk(
   async (comment, { rejectWithValue }) => {
     try {
       const response = await apiClient.post(
-        `comments/v/${comment.videoId}`,
+        `comments/v/${comment.identifier}`,
         comment
       );
       return response.data.data;
@@ -60,9 +60,27 @@ export const addVideoComment = createAsyncThunk(
 
 export const getTweetComments = createAsyncThunk(
   "comment/getTweetComments",
-  async (tweetId, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
+    let url = `comments/t/${data.identifier}`;
     try {
-      const response = await apiClient.get(`comments/t/${tweetId}`);
+      const queryParams = Object.entries(data || {})
+        .filter(
+          ([key, value]) =>
+            key !== "identifier" &&
+            value !== undefined &&
+            value !== null &&
+            value !== ""
+        )
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        )
+        .join("&");
+
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+      const response = await apiClient.get(url);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

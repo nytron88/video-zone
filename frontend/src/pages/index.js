@@ -12,6 +12,7 @@ import WatchHistory from "./WatchHistory";
 import VideoDisplay from "./VideoDisplay";
 import PostTweet from "./PostTweet";
 import CreatePlaylist from "./CreatePlaylist";
+import TweetDisplay from "./TweetDisplay";
 
 export {
   Home,
@@ -28,4 +29,5 @@ export {
   VideoDisplay,
   PostTweet,
   CreatePlaylist,
+  TweetDisplay,
 };

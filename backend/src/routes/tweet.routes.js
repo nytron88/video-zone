@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createTweet,
+  getTweetById,
   deleteTweet,
   getUserTweets,
   updateTweet,
@@ -12,6 +13,10 @@ router.use(verifyLogin);
 
 router.route("/").post(createTweet);
 router.route("/user/:username").get(getUserTweets);
-router.route("/:tweetId").patch(updateTweet).delete(deleteTweet);
+router
+  .route("/:tweetId")
+  .get(getTweetById)
+  .patch(updateTweet)
+  .delete(deleteTweet);
 
 export default router;

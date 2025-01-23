@@ -7,19 +7,14 @@ import React, {
   memo,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getVideoComments,
-  addVideoComment,
-  updateComment,
-  deleteComment,
-} from "../../store/slices/commentSlice";
+import { updateComment, deleteComment } from "../../store/slices/commentSlice";
 import { toggleCommentLike } from "../../store/slices/likeSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Edit2, Trash2, RefreshCcw, Check, X, ThumbsUp } from "lucide-react";
 import { toast } from "react-toastify";
 import { ToastContainer } from "../index";
 
-function CommentList({ videoId }) {
+function CommentList({ identifier, getCommentsAction, addCommentAction }) {
   const dispatch = useDispatch();
   const { data: userData } = useSelector((state) => state.user);
   const [comments, setComments] = useState([]);
@@ -32,14 +27,14 @@ function CommentList({ videoId }) {
   const [editContent, setEditContent] = useState("");
   const [sortBy, setSortBy] = useState("top");
   const totalCommentsRef = useRef(0);
-  const seenCommentIds = useMemo(() => new Set(), [videoId]);
+  const seenCommentIds = useMemo(() => new Set(), [identifier]);
   const LIMIT = 10;
 
   const fetchComments = useCallback(
     async (pageNum, isRefresh = false) => {
       try {
         const response = await dispatch(
-          getVideoComments({ videoId, page: pageNum, limit: LIMIT, sortBy })
+          getCommentsAction({ identifier, page: pageNum, limit: LIMIT, sortBy })
         ).unwrap();
 
         setComments((prevComments) => {
@@ -69,7 +64,7 @@ function CommentList({ videoId }) {
         if (isRefresh) setIsRefreshing(false);
       }
     },
-    [dispatch, videoId, seenCommentIds, sortBy]
+    [dispatch, identifier, seenCommentIds, sortBy]
   );
 
   useEffect(() => {
@@ -79,7 +74,7 @@ function CommentList({ videoId }) {
     setIsLoading(true);
     seenCommentIds.clear();
     fetchComments(1);
-  }, [fetchComments, videoId]);
+  }, [fetchComments, identifier]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -106,7 +101,7 @@ function CommentList({ videoId }) {
     if (!newComment.trim()) return;
     try {
       await dispatch(
-        addVideoComment({ videoId, content: newComment })
+        addCommentAction({ identifier, content: newComment })
       ).unwrap();
       setNewComment("");
       toast.success("Comment added successfully");

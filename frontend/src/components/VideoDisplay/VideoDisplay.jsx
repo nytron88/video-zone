@@ -2,9 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getVideoById } from "../../store/slices/videoSlice";
-import CommentList from "./CommentList";
+import {CommentList} from "../index";
 import VideoDetails from "./VideoDetails";
 import VideoPlayer from "./VideoPlayer";
+import {
+  getVideoComments,
+  addVideoComment,
+} from "../../store/slices/commentSlice";
 import { Loader } from "../index";
 
 function VideoDisplay() {
@@ -58,7 +62,11 @@ function VideoDisplay() {
     <div className="max-w-4xl mx-auto space-y-6">
       <VideoPlayer videoFile={video.videoFile} title={video.title} />
       <VideoDetails video={video} />
-      <CommentList videoId={videoId} />
+      <CommentList
+        identifier={videoId}
+        getCommentsAction={getVideoComments}
+        addCommentAction={addVideoComment}
+      />
     </div>
   );
 }

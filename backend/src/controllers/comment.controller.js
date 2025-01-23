@@ -68,6 +68,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
         isLiked: 1,
         owner: {
           username: 1,
+          fullname: 1,
           avatar: 1,
         },
       },
@@ -131,9 +132,7 @@ const getTweetComments = asyncHandler(async (req, res) => {
 
   const pipeline = [
     {
-      $match: {
-        tweet: new mongoose.Types.ObjectId(tweetId),
-      },
+      $match: { tweet: new mongoose.Types.ObjectId(tweetId) },
     },
     {
       $lookup: {
@@ -159,6 +158,13 @@ const getTweetComments = asyncHandler(async (req, res) => {
     {
       $addFields: {
         totalLikes: { $size: "$likes" },
+        isLiked: {
+          $cond: {
+            if: { $in: [req?.user._id, "$likes.likedBy"] },
+            then: true,
+            else: false,
+          },
+        },
       },
     },
     {
@@ -166,8 +172,10 @@ const getTweetComments = asyncHandler(async (req, res) => {
         content: 1,
         createdAt: 1,
         totalLikes: 1,
+        isLiked: 1,
         owner: {
           username: 1,
+          fullname: 1,
           avatar: 1,
         },
       },
