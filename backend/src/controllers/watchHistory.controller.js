@@ -89,6 +89,8 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
     options
   );
 
+  console.log(result)
+
   const responseData = {
     videos: result.docs,
     totalVideos: result.totalDocs,

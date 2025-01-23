@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useMemo,
   useRef,
+  memo,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -439,4 +440,4 @@ function CommentList({ videoId }) {
   );
 }
 
-export default CommentList;
+export default memo(CommentList);

@@ -82,6 +82,9 @@ function WatchHistory() {
       const response = await dispatch(
         getUserWatchHistory({ page: pageNum })
       ).unwrap();
+
+      console.log(response)
+
       const newVideos = response.videos;
 
       if (newVideos.length === 0) {

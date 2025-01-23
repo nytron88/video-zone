@@ -56,7 +56,7 @@ export const getVideoById = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await apiClient.get(
-        `/videos/${data._id}?incrementView=${data.incrementView}`
+        `/videos/${data.videoId}?incrementView=${data.incrementView}`
       );
       return response.data.data;
     } catch (error) {
