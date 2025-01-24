@@ -8,7 +8,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  const { page = 1, limit = 10, sortBy = "newest" } = req.query;
+  const { page = 1, limit = 10, sortBy = "top" } = req.query;
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid video ID");
@@ -16,11 +16,6 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
   if (!["newest", "top"].includes(sortBy)) {
     throw new ApiError(400, "Invalid sort by value");
-  }
-
-  const video = await Video.findById(videoId);
-  if (!video) {
-    throw new ApiError(404, "Video not found");
   }
 
   const pipeline = [
@@ -115,7 +110,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 const getTweetComments = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
-  const { page = 1, limit = 10, sortBy = "newest" } = req.query;
+  const { page = 1, limit = 10, sortBy = "top" } = req.query;
 
   if (!isValidObjectId(tweetId)) {
     throw new ApiError(400, "Invalid tweet ID");
@@ -314,7 +309,7 @@ const deleteComment = asyncHandler(async (req, res) => {
 
   const deletionConfirmation = await Comment.deleteOne({
     _id: commentId,
-    owner: req.user._id, // Ensures only the owner can delete
+    owner: req.user._id,
   });
 
   if (deletionConfirmation.deletedCount === 0) {

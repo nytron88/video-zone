@@ -30,6 +30,11 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
               as: "video",
               pipeline: [
                 {
+                  $match: {
+                    isPublished: true,
+                  },
+                },
+                {
                   $lookup: {
                     from: "users",
                     localField: "owner",
@@ -89,7 +94,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
     options
   );
 
-  console.log(result)
+  console.log(result);
 
   const responseData = {
     videos: result.docs,

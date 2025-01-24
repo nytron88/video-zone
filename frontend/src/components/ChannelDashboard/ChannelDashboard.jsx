@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getChannelStats,
-  getChannelVideos,
-} from "../../store/slices/dashboardSlice";
+import { getChannelStats } from "../../store/slices/dashboardSlice";
 import { Loader, ToastContainer } from "../index";
 import StatCard from "./StatCard";
 import VideoList from "./VideoList";
@@ -12,11 +9,9 @@ import { toast } from "react-toastify";
 function ChannelDashboard() {
   const dispatch = useDispatch();
   const [stats, setStats] = useState({});
-  const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const { data: userData } = useSelector((state) => state.user);
 
-  // Fetch channel stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -34,34 +29,7 @@ function ChannelDashboard() {
     fetchStats();
   }, [dispatch, userData]);
 
-  // Fetch videos callback
-  const fetchVideos = useCallback(
-    async (pageNum = 1, isRefresh = false) => {
-      try {
-        const fetchedData = await dispatch(
-          getChannelVideos({
-            username: userData.username,
-            page: pageNum,
-            limit: 10,
-          })
-        ).unwrap();
-
-        setVideos((prev) =>
-          isRefresh ? fetchedData : [...prev, ...fetchedData]
-        );
-      } catch (error) {
-        toast.error("Failed to fetch videos");
-      }
-    },
-    [dispatch, userData._id]
-  );
-
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
-        <Loader />
-      </div>
-    );
+  if (loading) return <Loader />;
 
   return (
     <div className="p-4 md:p-6 bg-black min-h-screen">
@@ -87,11 +55,7 @@ function ChannelDashboard() {
             value={stats?.totalLikes || 0}
           />
         </div>
-        <VideoList
-          videos={videos}
-          setVideos={setVideos}
-          fetchVideos={fetchVideos}
-        />
+        <VideoList />
       </div>
     </div>
   );

@@ -98,7 +98,7 @@ function VideoList() {
     }
   };
 
-  const handleTogglePublish = async (videoId, currentStatus) => {
+  const handleTogglePublish = async (videoId) => {
     try {
       await dispatch(togglePublishStatus(videoId)).unwrap();
       handleRefresh();
