@@ -219,6 +219,13 @@ const getVideoById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Video not found");
   }
 
+  if (
+    !video[0].isPublished &&
+    req.user._id.toString() !== video[0]?.owner._id.toString()
+  ) {
+    throw new ApiError(403, "Video is not published");
+  }
+
   await WatchHistory.findOneAndUpdate(
     {
       user: req.user._id,

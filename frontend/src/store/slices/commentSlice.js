@@ -96,7 +96,7 @@ export const addTweetComment = createAsyncThunk(
   async (comment, { rejectWithValue }) => {
     try {
       const response = await apiClient.post(
-        `comments/t/${comment.tweetId}`,
+        `comments/t/${comment.identifier}`,
         comment
       );
       return response.data.data;

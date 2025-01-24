@@ -14,6 +14,7 @@ import PostTweet from "./PostTweet";
 import CreatePlaylist from "./CreatePlaylist";
 import TweetDisplay from "./TweetDisplay";
 import EditTweet from "./EditTweet";
+import PlaylistDisplay from "./PlaylistDisplay";
 
 export {
   Home,
@@ -32,4 +33,5 @@ export {
   CreatePlaylist,
   TweetDisplay,
   EditTweet,
+  PlaylistDisplay,
 };

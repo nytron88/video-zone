@@ -27,6 +27,7 @@ import {
   CreatePlaylist,
   TweetDisplay,
   EditTweet,
+  PlaylistDisplay,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -150,6 +151,14 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <EditTweet />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="playlist/:playlistId"
+        element={
+          <AuthLayout authentication>
+            <PlaylistDisplay />
           </AuthLayout>
         }
       />

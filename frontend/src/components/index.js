@@ -31,6 +31,8 @@ import CreatePlaylist from "./CreatePlaylist/CreatePlaylist";
 import CommentList from "./CommentList/CommentList";
 import TweetDisplay from "./TweetDisplay/TweetDisplay";
 import EditTweet from "./EditTweet/EditTweet";
+import PlaylistDisplay from "./PlaylistDisplay/PlaylistDisplay";
+import DeleteConfirmDialog from "./Common/DeleteConfirmDialog";
 
 export {
   Login,
@@ -66,4 +68,6 @@ export {
   CommentList,
   TweetDisplay,
   EditTweet,
+  PlaylistDisplay,
+  DeleteConfirmDialog,
 };

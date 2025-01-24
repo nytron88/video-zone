@@ -10,10 +10,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateComment, deleteComment } from "../../store/slices/commentSlice";
 import { toggleCommentLike } from "../../store/slices/likeSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Edit2, Trash2, RefreshCcw, Check, X, ThumbsUp } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import { toast } from "react-toastify";
 import { ToastContainer } from "../index";
 import { Link } from "react-router-dom";
+import CommentSkeleton from "./CommentSkeleton";
+import { DeleteConfirmDialog } from "../index";
+import CommentContent from "./CommentContent";
+import LoadingIndicator from "./LoadingIndicator";
 
 function CommentList({ identifier, getCommentsAction, addCommentAction }) {
   const dispatch = useDispatch();
@@ -166,177 +170,13 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
     }
   };
 
-  const CommentSkeleton = () => (
-    <div className="flex items-start gap-4 p-4 border-b border-gray-700/50 animate-pulse">
-      <div className="w-10 h-10 bg-gray-700 rounded-full" />
-      <div className="flex-1 space-y-3">
-        <div className="h-4 bg-gray-700 rounded w-1/4" />
-        <div className="h-4 bg-gray-700 rounded w-1/3" />
-        <div className="h-4 bg-gray-700 rounded w-3/4" />
-      </div>
-    </div>
-  );
-
-  const DeleteConfirmDialog = () => (
-    <div
-      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ${
-        deleteCommentId ? "" : "hidden"
-      }`}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 max-w-sm w-full shadow-xl">
-        <h3 className="text-white text-lg font-semibold mb-4">
-          Delete Comment
-        </h3>
-        <p className="text-gray-400 mb-6">
-          Are you sure you want to delete this comment? This action cannot be
-          undone.
-        </p>
-        <div className="flex justify-end gap-4">
-          <button
-            onClick={() => setDeleteCommentId(null)}
-            className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDeleteConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const LoadingIndicator = () => (
-    <div className="flex justify-center items-center w-full py-6">
-      <div className="flex space-x-3">
-        {[0, 150, 300].map((delay) => (
-          <div
-            key={delay}
-            className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"
-            style={{ animationDelay: `${delay}ms` }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-
-  const CommentContent = ({
-    comment,
-    onUpdateComment,
-    onCancelEdit,
-    onDelete,
-    onToggleLike,
-  }) => {
-    const textareaRef = useRef(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [content, setContent] = useState(comment.content);
-
-    const handleEditClick = () => {
-      setIsEditing(true);
-      setTimeout(() => textareaRef.current?.focus(), 0);
-    };
-
-    const handleSaveClick = () => {
-      if (content.trim()) {
-        onUpdateComment(comment._id, content);
-        setIsEditing(false);
-      }
-    };
-
-    const handleCancelClick = () => {
-      setIsEditing(false);
-      setContent(comment.content);
-      onCancelEdit();
-    };
-
-    return (
-      <div>
-        {isEditing ? (
-          <div className="mt-2">
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full p-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              rows="3"
-            />
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={handleSaveClick}
-                className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Check className="w-4 h-4" /> Save
-              </button>
-              <button
-                onClick={handleCancelClick}
-                className="flex items-center gap-1 px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                <X className="w-4 h-4" /> Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="mt-2 text-white">{comment.content}</p>
-            <div className="flex items-center justify-between mt-2">
-              <p className="text-sm text-gray-500">
-                {new Date(comment.createdAt).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </p>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => onToggleLike(comment._id)}
-                  className={`flex items-center space-x-1 ${
-                    comment.isLiked
-                      ? "text-purple-500 hover:text-purple-600"
-                      : "text-gray-400 hover:text-white"
-                  } transition-colors`}
-                >
-                  <ThumbsUp
-                    className={`w-4 h-4 ${
-                      comment.isLiked ? "fill-current" : ""
-                    }`}
-                  />
-                  <span className="text-sm">{comment.totalLikes || 0}</span>
-                </button>
-
-                {userData?.username === comment.owner.username && (
-                  <>
-                    <button
-                      onClick={handleEditClick}
-                      className="p-2 text-gray-400 hover:text-purple-500 hover:bg-purple-500/10 rounded-lg transition-colors"
-                      title="Edit comment"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(comment._id)}
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                      title="Delete comment"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="bg-black border border-gray-700/50 rounded-xl p-4 shadow-lg">
-      <DeleteConfirmDialog />
+      <DeleteConfirmDialog
+        deleteItemId={deleteCommentId}
+        setDeleteItemId={setDeleteCommentId}
+        handleDeleteConfirm={handleDeleteConfirm}
+      />
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl text-white font-bold">
           {totalCommentsRef.current} Comments
@@ -429,6 +269,7 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
                   </Link>
                 </div>
                 <CommentContent
+                  userData={userData}
                   comment={comment}
                   onUpdateComment={handleUpdateComment}
                   onCancelEdit={handleCancelEdit}

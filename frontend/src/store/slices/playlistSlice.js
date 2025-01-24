@@ -69,11 +69,11 @@ export const deletePlaylist = createAsyncThunk(
 
 export const addVideoToPlaylist = createAsyncThunk(
   "playlist/addVideoToPlaylist",
-  async (username, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
+    console.log(data);
     try {
-      const response = await apiClient.post(
-        `/playlist/add/${data.playlistId}/${username}`,
-        data
+      const response = await apiClient.patch(
+        `/playlist/add/${data.videoId}/${data.playlistId}`
       );
       return response.data.data;
     } catch (error) {

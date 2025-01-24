@@ -12,6 +12,7 @@ import {
 function VideoPlayer({
   videoFile,
   title,
+  autoPlay = true,
   playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2],
 }) {
   const videoRef = useRef(null);
@@ -96,6 +97,12 @@ function VideoPlayer({
 
     const handleLoadedMetadata = () => {
       setDuration(videoElement.duration);
+      if (autoPlay) {
+        videoElement
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch(console.warn);
+      }
     };
 
     const handleFullscreenChange = () => {
@@ -109,7 +116,7 @@ function VideoPlayer({
       videoElement?.removeEventListener("loadedmetadata", handleLoadedMetadata);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
-  }, []);
+  }, [autoPlay]);
 
   const formatTime = (seconds) => {
     if (isNaN(seconds)) return "00:00";

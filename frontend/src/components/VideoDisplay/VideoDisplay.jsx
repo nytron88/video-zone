@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getVideoById } from "../../store/slices/videoSlice";
-import {CommentList} from "../index";
+import { CommentList } from "../index";
 import VideoDetails from "./VideoDetails";
 import VideoPlayer from "./VideoPlayer";
 import {
