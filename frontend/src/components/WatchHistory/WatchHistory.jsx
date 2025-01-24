@@ -83,7 +83,7 @@ function WatchHistory() {
         getUserWatchHistory({ page: pageNum })
       ).unwrap();
 
-      console.log(response)
+      console.log(response);
 
       const newVideos = response.videos;
 
@@ -180,7 +180,7 @@ function WatchHistory() {
                     >
                       <div className="flex flex-col md:flex-row gap-6">
                         <Link
-                          to={`/watch/${video._id}`}
+                          to={`/video/${video._id}`}
                           className="flex-shrink-0 relative w-full md:w-64 aspect-video overflow-hidden rounded-lg group-hover:ring-2 ring-cyan-400/30 transition-all"
                         >
                           <img

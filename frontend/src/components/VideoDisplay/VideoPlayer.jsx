@@ -6,10 +6,14 @@ import {
   VolumeX,
   Maximize2,
   Minimize2,
-  PictureInPicture,
+  Settings,
 } from "lucide-react";
 
-function VideoPlayer({ videoFile, title }) {
+function VideoPlayer({
+  videoFile,
+  title,
+  playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2],
+}) {
   const videoRef = useRef(null);
   const progressRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -17,25 +21,34 @@ function VideoPlayer({ videoFile, title }) {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isPictureInPicture, setIsPictureInPicture] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [showSettings, setShowSettings] = useState(false);
 
   const togglePlayPause = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
-        setIsPlaying(false);
       } else {
         videoRef.current.play();
-        setIsPlaying(true);
       }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleVideoClick = (e) => {
+    if (e.target === videoRef.current) {
+      togglePlayPause();
     }
   };
 
   const updateProgress = () => {
-    if (videoRef.current && progressRef.current) {
+    if (videoRef.current) {
       const progressPercent =
         (videoRef.current.currentTime / videoRef.current.duration) * 100;
       setProgress(progressPercent);
+      setCurrentTime(videoRef.current.currentTime);
     }
   };
 
@@ -51,67 +64,52 @@ function VideoPlayer({ videoFile, title }) {
     }
   };
 
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
+  const handlePlaybackRateChange = (rate) => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = rate;
+      setPlaybackRate(rate);
+      setShowSettings(false);
+    }
+  };
+
+  const handleVolumeChange = (newVolume) => {
     if (videoRef.current) {
       videoRef.current.volume = newVolume;
+      setVolume(newVolume);
       setIsMuted(newVolume === 0);
     }
   };
 
-  const toggleMute = () => {
-    if (videoRef.current) {
-      const newMuteState = !isMuted;
-      setIsMuted(newMuteState);
-      videoRef.current.muted = newMuteState;
-    }
-  };
-
   const toggleFullscreen = () => {
+    const videoElement = videoRef.current;
     if (!document.fullscreenElement) {
-      if (videoRef.current.requestFullscreen) {
-        videoRef.current.requestFullscreen();
-      } else if (videoRef.current.mozRequestFullScreen) {
-        // Firefox
-        videoRef.current.mozRequestFullScreen();
-      } else if (videoRef.current.webkitRequestFullscreen) {
-        // Chrome, Safari and Opera
-        videoRef.current.webkitRequestFullscreen();
-      } else if (videoRef.current.msRequestFullscreen) {
-        // Internet Explorer/Edge
-        videoRef.current.msRequestFullscreen();
-      }
+      videoElement?.requestFullscreen();
       setIsFullscreen(true);
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
+      document.exitFullscreen();
       setIsFullscreen(false);
     }
   };
 
-  const togglePictureInPicture = () => {
-    if (document.pictureInPictureElement) {
-      document.exitPictureInPicture();
-      setIsPictureInPicture(false);
-    } else if (videoRef.current) {
-      if (videoRef.current.requestPictureInPicture) {
-        videoRef.current
-          .requestPictureInPicture()
-          .then(() => setIsPictureInPicture(true))
-          .catch((error) => {
-            console.error("Error entering Picture in Picture mode", error);
-          });
-      }
-    }
-  };
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    const handleLoadedMetadata = () => {
+      setDuration(videoElement.duration);
+    };
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    videoElement?.addEventListener("loadedmetadata", handleLoadedMetadata);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      videoElement?.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   const formatTime = (seconds) => {
     if (isNaN(seconds)) return "00:00";
@@ -122,52 +120,16 @@ function VideoPlayer({ videoFile, title }) {
       .padStart(2, "0")}`;
   };
 
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    const handlePictureInPictureChange = () => {
-      setIsPictureInPicture(!!document.pictureInPictureElement);
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
-    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
-
-    videoRef.current?.addEventListener(
-      "enterpictureinpicture",
-      handlePictureInPictureChange
-    );
-    videoRef.current?.addEventListener(
-      "leavepictureinpicture",
-      handlePictureInPictureChange
-    );
-
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      document.removeEventListener(
-        "webkitfullscreenchange",
-        handleFullscreenChange
-      );
-      document.removeEventListener(
-        "mozfullscreenchange",
-        handleFullscreenChange
-      );
-      document.removeEventListener(
-        "MSFullscreenChange",
-        handleFullscreenChange
-      );
-    };
-  }, []);
-
   return (
-    <div className="relative bg-black w-full rounded-xl overflow-hidden group">
+    <div
+      className="relative bg-black w-full rounded-xl overflow-hidden group"
+      onClick={(e) => e.stopPropagation()}
+    >
       <video
         ref={videoRef}
         src={videoFile}
-        className="w-full h-auto"
+        className="w-full h-auto cursor-pointer"
+        onClick={handleVideoClick}
         onTimeUpdate={updateProgress}
         onEnded={() => setIsPlaying(false)}
         controlsList="nodownload"
@@ -188,14 +150,17 @@ function VideoPlayer({ videoFile, title }) {
           />
         </div>
 
-        <div className="flex items-center justify-between text-white">
+        <div className="flex items-center justify-between text-white relative">
           <div className="flex items-center space-x-4">
             <button onClick={togglePlayPause} className="hover:text-purple-400">
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
 
             <div className="flex items-center space-x-2">
-              <button onClick={toggleMute} className="hover:text-purple-400">
+              <button
+                onClick={() => handleVolumeChange(isMuted ? volume : 0)}
+                className="hover:text-purple-400"
+              >
                 {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
               </button>
               <input
@@ -203,27 +168,42 @@ function VideoPlayer({ videoFile, title }) {
                 min="0"
                 max="1"
                 step="0.1"
-                value={volume}
-                onChange={handleVolumeChange}
+                value={isMuted ? 0 : volume}
+                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
                 className="w-24 h-1 bg-gray-600 appearance-none rounded-full"
               />
             </div>
 
             <div className="text-sm">
-              {formatTime(videoRef.current?.currentTime)} /{" "}
-              {formatTime(videoRef.current?.duration)}
+              {formatTime(currentTime)} / {formatTime(duration)}
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 relative">
             <button
-              onClick={togglePictureInPicture}
-              className={`hover:text-purple-400 ${
-                isPictureInPicture ? "text-purple-500" : ""
-              }`}
+              onClick={() => setShowSettings(!showSettings)}
+              className="hover:text-purple-400"
             >
-              <PictureInPicture size={20} />
+              <Settings size={20} />
             </button>
+
+            {showSettings && (
+              <div className="absolute bottom-full right-0 bg-black/80 rounded p-2 space-y-1">
+                {playbackRates.map((rate) => (
+                  <button
+                    key={rate}
+                    onClick={() => handlePlaybackRateChange(rate)}
+                    className={`block w-full text-left px-2 py-1 ${
+                      playbackRate === rate
+                        ? "bg-purple-500"
+                        : "hover:bg-gray-700"
+                    }`}
+                  >
+                    {rate}x
+                  </button>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={toggleFullscreen}

@@ -13,6 +13,7 @@ import VideoDisplay from "./VideoDisplay";
 import PostTweet from "./PostTweet";
 import CreatePlaylist from "./CreatePlaylist";
 import TweetDisplay from "./TweetDisplay";
+import EditTweet from "./EditTweet";
 
 export {
   Home,
@@ -30,4 +31,5 @@ export {
   PostTweet,
   CreatePlaylist,
   TweetDisplay,
+  EditTweet,
 };

@@ -26,6 +26,7 @@ import {
   PostTweet,
   CreatePlaylist,
   TweetDisplay,
+  EditTweet,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -81,7 +82,7 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="dashboard/videos/edit/:videoId"
+        path="video/edit/:videoId"
         element={
           <AuthLayout authentication>
             <EditVideo />
@@ -141,6 +142,14 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <TweetDisplay />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="tweet/edit/:tweetId"
+        element={
+          <AuthLayout authentication>
+            <EditTweet />
           </AuthLayout>
         }
       />

@@ -28,8 +28,9 @@ import WatchHistory from "./WatchHistory/WatchHistory";
 import VideoDisplay from "./VideoDisplay/VideoDisplay";
 import PostTweet from "./PostTweet/PostTweet";
 import CreatePlaylist from "./CreatePlaylist/CreatePlaylist";
-import CommentList from "./Common/CommentList";
+import CommentList from "./CommentList/CommentList";
 import TweetDisplay from "./TweetDisplay/TweetDisplay";
+import EditTweet from "./EditTweet/EditTweet";
 
 export {
   Login,
@@ -64,4 +65,5 @@ export {
   CreatePlaylist,
   CommentList,
   TweetDisplay,
+  EditTweet,
 };

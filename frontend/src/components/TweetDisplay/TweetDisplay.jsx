@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { getTweetById } from "../../store/slices/tweetSlice";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getTweetById, deleteTweet } from "../../store/slices/tweetSlice";
 import {
   getTweetComments,
   addTweetComment,
 } from "../../store/slices/commentSlice";
+import { toggleTweetLike } from "../../store/slices/likeSlice";
 import { CommentList, Loader } from "../index";
-import { UserCircle, Clock } from "lucide-react";
+import { UserCircle, Clock, ThumbsUp, Trash2, Edit } from "lucide-react";
 
 function TweetDisplay() {
   const { tweetId } = useParams();
@@ -15,6 +16,8 @@ function TweetDisplay() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { data: userData } = useSelector((state) => state.user);
 
   const fetchTweet = async () => {
     try {
@@ -26,6 +29,28 @@ function TweetDisplay() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLikeToggle = async () => {
+    try {
+      await dispatch(toggleTweetLike(tweetId)).unwrap();
+      fetchTweet();
+    } catch (err) {
+      console.error("Failed to toggle like:", err);
+    }
+  };
+
+  const handleDeleteTweet = async () => {
+    try {
+      await dispatch(deleteTweet(tweetId)).unwrap();
+      navigate("/");
+    } catch (err) {
+      console.error("Failed to delete tweet:", err);
+    }
+  };
+
+  const handleEditTweet = () => {
+    navigate(`/tweet/edit/${tweetId}`);
   };
 
   useEffect(() => {
@@ -42,6 +67,8 @@ function TweetDisplay() {
       </div>
     );
   }
+
+  const isOwnTweet = userData._id === tweet.owner._id;
 
   return (
     <div className="max-w-5xl mx-auto bg-gray-900 rounded-xl shadow-lg overflow-hidden">
@@ -71,9 +98,42 @@ function TweetDisplay() {
       </div>
       <div className="px-4 pb-4">
         <p className="text-white text-base mb-3">{tweet.content}</p>
-        <div className="flex items-center text-sm text-gray-500 space-x-2">
-          <Clock className="w-4 h-4" />
-          <span>{new Date(tweet.createdAt).toLocaleString()}</span>
+        <div className="flex items-center justify-between text-sm text-gray-500 space-x-2">
+          <div className="flex items-center space-x-2">
+            <Clock className="w-4 h-4" />
+            <span>{new Date(tweet.createdAt).toLocaleString()}</span>
+          </div>
+          <div className="flex items-center space-x-4">
+            {/* Like Button */}
+            <button
+              onClick={handleLikeToggle}
+              className="flex items-center space-x-1 hover:text-red-500 transition-colors"
+            >
+              <ThumbsUp
+                className={`w-5 h-5 ${
+                  tweet.isLiked ? "text-red-500 fill-current" : "text-gray-500"
+                }`}
+              />
+              <span>{tweet.likesCount || 0}</span>
+            </button>
+
+            {isOwnTweet && (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleEditTweet}
+                  className="text-blue-500 hover:text-blue-400 transition-colors"
+                >
+                  <Edit className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleDeleteTweet}
+                  className="text-red-500 hover:text-red-400 transition-colors"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div className="border-t border-gray-700 p-4">

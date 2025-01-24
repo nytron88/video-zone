@@ -163,7 +163,7 @@ function VideoList() {
   );
 
   const handleEdit = (videoId) => {
-    navigate(`/dashboard/videos/edit/${videoId}`);
+    navigate(`/video/edit/${videoId}`);
   };
 
   const LoadingIndicator = () => (

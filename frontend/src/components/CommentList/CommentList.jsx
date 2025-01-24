@@ -13,6 +13,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Edit2, Trash2, RefreshCcw, Check, X, ThumbsUp } from "lucide-react";
 import { toast } from "react-toastify";
 import { ToastContainer } from "../index";
+import { Link } from "react-router-dom";
 
 function CommentList({ identifier, getCommentsAction, addCommentAction }) {
   const dispatch = useDispatch();
@@ -401,23 +402,31 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
           {comments.map((comment) => (
             <div
               key={comment._id}
-              className="flex items-start gap-4 p-4 border-b border-gray-700/50 hover:bg-gray-900 transition-colors duration-200"
+              className="flex items-start gap-2 p-4 border-b border-gray-700/50 hover:bg-gray-900 transition-colors duration-200"
             >
-              <img
-                src={comment.owner.avatar || "/placeholder.svg"}
-                alt={comment.owner.fullname}
-                className="w-10 h-10 rounded-full object-cover"
-              />
+              <Link
+                to={`/channel/${comment.owner.username}`}
+                className="hover:bg-gray-800 p-2 rounded-full transition-all duration-200"
+              >
+                <img
+                  src={comment.owner.avatar || "/placeholder.svg"}
+                  alt={comment.owner.fullname}
+                  className="w-10 h-10 rounded-full object-cover group-hover:opacity-90 transition-opacity duration-200"
+                />
+              </Link>
               <div className="flex-1">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-bold text-white">
+                  <Link
+                    to={`/channel/${comment.owner.username}`}
+                    className="group flex flex-col hover:bg-gray-800 p-2 rounded-lg transition-all duration-200"
+                  >
+                    <p className="font-bold text-white group-hover:text-blue-400 transition-all duration-200">
                       {comment.owner.fullname}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-400 group-hover:text-gray-200 transition-all duration-200">
                       @{comment.owner.username}
                     </p>
-                  </div>
+                  </Link>
                 </div>
                 <CommentContent
                   comment={comment}

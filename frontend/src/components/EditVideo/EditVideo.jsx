@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer } from "../index";
 import { toast } from "react-toastify";
-import { updateVideo, getVideoById } from "../../store/slices/videoSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { updateVideo } from "../../store/slices/videoSlice";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Input, Button, Loader } from "../index";
 import { Video, Image as ImageIcon, Edit } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
 
-function EditVideo() {
+function EditVideo({ video }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { videoId } = useParams();
@@ -19,7 +19,6 @@ function EditVideo() {
   const [isDraggingThumbnail, setIsDraggingThumbnail] = useState(false);
   const { startUpload } = useCloudinaryUpload();
   const [isLoading, setIsLoading] = useState(true);
-  const { data: userData } = useSelector((state) => state.user);
 
   const {
     register,
@@ -85,82 +84,56 @@ function EditVideo() {
 
     setIsLoading(true);
 
+    const uploadFile = async (file, folder, resourceType) => {
+      return await startUpload({
+        file,
+        folder,
+        resourceType,
+        metadata: {
+          title: data.title,
+          description: data.description,
+          size: file.size,
+          type: file.type,
+        },
+      });
+    };
+
     try {
-      let uploadedVideoResponse;
-      if (data?.videoFile) {
-        uploadedVideoResponse = await startUpload({
-          file: data.videoFile,
-          folder: "videos",
-          resourceType: "video",
-          metadata: {
-            title: data.title,
-            description: data.description,
-            size: data.videoFile.size,
-            type: data.videoFile.type,
-          },
-        });
-      }
+      const videoUploadResponse = data?.videoFile
+        ? await uploadFile(data.videoFile, "videos", "video")
+        : null;
 
-      let uploadedThumbnailResponse;
-
-      if (data?.thumbnail) {
-        uploadedThumbnailResponse = await startUpload({
-          file: data.thumbnail,
-          folder: "thumbnails",
-          resourceType: "image",
-          metadata: {
-            title: data.title,
-            description: data.description,
-            size: data.thumbnail.size,
-            type: data.thumbnail.type,
-          },
-        });
-      }
+      const thumbnailUploadResponse = data?.thumbnail
+        ? await uploadFile(data.thumbnail, "thumbnails", "image")
+        : null;
 
       const submitData = {
         _id: videoId,
         title: data.title,
         description: data.description,
-        uploadedVideoResponse,
-        thumbnailLink: uploadedThumbnailResponse.secure_url,
+        uploadedVideoResponse: videoUploadResponse,
+        thumbnailLink: thumbnailUploadResponse?.secure_url,
       };
 
-      const resultAction = await dispatch(updateVideo(submitData));
-      if (updateVideo.fulfilled.match(resultAction)) {
-        toast.success("Video published successfully!");
-        return navigate(`/video/${resultAction.payload._id}`);
-      } else {
-        throw new Error("Failed to publish video");
-      }
+      const resultAction = await dispatch(updateVideo(submitData)).unwrap();
+      toast.success("Video published successfully!");
+      navigate(`/video/${resultAction._id}`);
     } catch (err) {
-      return toast.error(err.message || "Something went wrong during upload!");
+      toast.error(err.message || "Something went wrong during upload!");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchVideoDetails = async () => {
-      try {
-        const video = await dispatch(getVideoById({ _id: videoId })).unwrap();
-
-        if (userData._id !== video.owner) {
-          return navigate(`/video/${videoId}`);
-        }
-
-        setValue("title", video.title);
-        setValue("description", video.description);
-        setVideoPreview(video.videoFile);
-        setThumbnailPreview(video.thumbnail);
-      } catch (err) {
-        toast.error("Failed to load video details.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVideoDetails();
-  }, [dispatch, videoId, setValue]);
+    if (video) {
+      setValue("title", video.title);
+      setValue("description", video.description);
+      setVideoPreview(video.videoFile);
+      setThumbnailPreview(video.thumbnail);
+      setIsLoading(false);
+    }
+  }, [video]);
 
   if (isLoading) return <Loader />;
 

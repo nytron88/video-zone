@@ -119,7 +119,7 @@ function VideoDetails({ video }) {
   };
 
   const handleEdit = () => {
-    navigate("/edit-profile");
+    navigate(`/video/edit/${video._id}`);
   };
 
   const formatSubscriberCount = (count) => {
@@ -180,7 +180,7 @@ function VideoDetails({ video }) {
           }`}
         >
           {userData.username === video.owner.username ? (
-            "Edit Profile"
+            "Edit Video"
           ) : isSubscribed ? (
             <>
               <span>Subscribed</span>
