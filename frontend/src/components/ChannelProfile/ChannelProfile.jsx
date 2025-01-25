@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getUserPlaylists } from "../../store/slices/playlistSlice";
 import { getUserTweets } from "../../store/slices/tweetSlice";
 import { getChannelVideos } from "../../store/slices/dashboardSlice";
@@ -20,15 +19,14 @@ const ChannelProfile = ({
   channelDetails,
   fetchChannelProfile,
   toggleSubscription,
+  isOwner = false,
 }) => {
-  const { username } = useParams();
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("videos");
   const [loading, setLoading] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [tweets, setTweets] = useState([]);
   const [subscribed, setSubscribed] = useState([]);
-  const { data: currentUserData } = useSelector((state) => state.user);
 
   const tabs = [
     { id: "videos", label: "Videos" },
@@ -127,7 +125,7 @@ const ChannelProfile = ({
 
   const renderPlaylists = () => (
     <div className="space-y-4">
-      {currentUserData.username === username && (
+      {isOwner && (
         <div className="flex justify-end mb-4">
           <Link
             to="/create-playlist"
@@ -189,7 +187,7 @@ const ChannelProfile = ({
 
   const renderTweets = () => (
     <div className="space-y-4">
-      {currentUserData.username === username && (
+      {isOwner && (
         <div className="flex justify-end mb-4">
           <Link
             to="/post-tweet"
@@ -332,7 +330,7 @@ const ChannelProfile = ({
               </div>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              {currentUserData.username === username ? (
+              {isOwner ? (
                 <>
                   <Link
                     to="/edit-profile"

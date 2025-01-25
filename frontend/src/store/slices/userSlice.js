@@ -68,7 +68,6 @@ export const updateAccount = createAsyncThunk(
       const response = await apiClient.patch("/users/update-account", data);
       return response.data.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data);
       }

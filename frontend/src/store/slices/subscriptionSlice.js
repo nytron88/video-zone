@@ -41,7 +41,6 @@ export const getSubscribedChannels = createAsyncThunk(
   "subscription/getSubscribedChannels",
   async (subscriberId, { rejectWithValue }) => {
     try {
-      console.log(subscriberId);
       const response = await apiClient.get(`/subscriptions/u/${subscriberId}`);
       return response.data.data.channels;
     } catch (error) {

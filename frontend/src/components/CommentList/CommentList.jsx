@@ -117,7 +117,6 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
   };
 
   const handleCancelEdit = () => {
-    setEditingComment(null);
     setEditContent("");
   };
 

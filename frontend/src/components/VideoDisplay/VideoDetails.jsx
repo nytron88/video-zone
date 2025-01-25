@@ -22,7 +22,7 @@ function PlaylistModal({ videoId, onClose }) {
     const fetchPlaylists = async () => {
       try {
         const response = await dispatch(
-          getUserPlaylists(userData.username)
+          getUserPlaylists(userData._id)
         ).unwrap();
         setPlaylists(response);
         setIsLoading(false);
@@ -34,7 +34,7 @@ function PlaylistModal({ videoId, onClose }) {
     };
 
     fetchPlaylists();
-  }, [dispatch, userData.username]);
+  }, [dispatch, userData._id]);
 
   const handleAddToPlaylist = async (playlistId) => {
     try {
@@ -261,19 +261,19 @@ function VideoDetails({ video }) {
         </Link>
         <button
           onClick={
-            userData.username === video.owner.username
+            userData._id === video.owner._id
               ? handleEdit
               : handleSubscribe
           }
           className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
-            userData.username === video.owner.username
+            userData._id === video.owner._id
               ? "bg-purple-600 text-white hover:bg-purple-700"
               : isSubscribed
               ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
               : "bg-purple-600 text-white hover:bg-purple-700"
           }`}
         >
-          {userData.username === video.owner.username ? (
+          {userData._id === video.owner._id ? (
             "Edit Video"
           ) : isSubscribed ? (
             <>

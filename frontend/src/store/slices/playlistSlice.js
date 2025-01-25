@@ -41,7 +41,10 @@ export const updatePlaylist = createAsyncThunk(
   "playlist/updatePlaylist",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.patch(`/playlist/${data._id}`, data);
+      const response = await apiClient.patch(
+        `/playlist/${data.playlistId}`,
+        data
+      );
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -70,7 +73,6 @@ export const deletePlaylist = createAsyncThunk(
 export const addVideoToPlaylist = createAsyncThunk(
   "playlist/addVideoToPlaylist",
   async (data, { rejectWithValue }) => {
-    console.log(data);
     try {
       const response = await apiClient.patch(
         `/playlist/add/${data.videoId}/${data.playlistId}`
@@ -89,8 +91,8 @@ export const removeVideoFromPlaylist = createAsyncThunk(
   "playlist/removeVideoFromPlaylist",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await apiClient.delete(
-        `/playlist/remove/${data.playlistId}/${data.videoId}`
+      const response = await apiClient.patch(
+        `/playlist/remove/${data.videoId}/${data.playlistId}`
       );
       return response.data.data;
     } catch (error) {

@@ -111,7 +111,9 @@ const getPlaylistById = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: "$owner",
+      $addFields: {
+        owner: { $arrayElemAt: ["$owner", 0] },
+      },
     },
     {
       $lookup: {
@@ -119,6 +121,30 @@ const getPlaylistById = asyncHandler(async (req, res) => {
         localField: "videos",
         foreignField: "_id",
         as: "videos",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    username: 1,
+                    avatar: 1,
+                    fullname: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $addFields: {
+              owner: { $arrayElemAt: ["$owner", 0] },
+            },
+          },
+        ],
       },
     },
   ]);
@@ -237,7 +263,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not authorized to delete this playlist");
   }
 
-  await playlist.remove();
+  await Playlist.deleteOne({ _id: playlistId });
 
   return res
     .status(200)
