@@ -31,7 +31,7 @@ function VideoList() {
       try {
         const fetchedData = await dispatch(
           getChannelVideos({
-            username: userData.username,
+            channelId: userData._id,
             page: pageNum,
             limit: LIMIT,
           })

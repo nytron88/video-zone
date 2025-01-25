@@ -104,9 +104,9 @@ export const removeVideoFromPlaylist = createAsyncThunk(
 
 export const getUserPlaylists = createAsyncThunk(
   "playlist/getUserPlaylists",
-  async (username, { rejectWithValue }) => {
+  async (userId, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(`/playlist/user/${username}`);
+      const response = await apiClient.get(`/playlist/user/${userId}`);
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {

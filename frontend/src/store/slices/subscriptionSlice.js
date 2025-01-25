@@ -39,11 +39,10 @@ export const getUserChannelSubscribers = createAsyncThunk(
 
 export const getSubscribedChannels = createAsyncThunk(
   "subscription/getSubscribedChannels",
-  async (subscriberUsername, { rejectWithValue }) => {
+  async (subscriberId, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get(
-        `/subscriptions/u/${subscriberUsername}`
-      );
+      console.log(subscriberId);
+      const response = await apiClient.get(`/subscriptions/u/${subscriberId}`);
       return response.data.data.channels;
     } catch (error) {
       if (error.response && error.response.data) {

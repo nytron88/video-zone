@@ -56,10 +56,10 @@ const getChannelStats = asyncHandler(async (req, res) => {
 });
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { channelId } = req.params;
   const { page = 1, limit = 10 } = req.query;
 
-  const channel = await User.findOne({ username }, "_id username email");
+  const channel = await User.findById(channelId, "_id username email");
 
   if (!channel) {
     throw new ApiError(404, "Channel not found");
@@ -68,7 +68,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   const videoPipeline = [
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(channel._id),
+        owner: new mongoose.Types.ObjectId(channelId),
       },
     },
     {

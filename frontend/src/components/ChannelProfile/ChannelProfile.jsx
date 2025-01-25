@@ -3,26 +3,31 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserPlaylists } from "../../store/slices/playlistSlice";
 import { getUserTweets } from "../../store/slices/tweetSlice";
-import { getUserChannelProfile } from "../../store/slices/userSlice";
-import {
-  getSubscribedChannels,
-  toggleSubscription,
-} from "../../store/slices/subscriptionSlice";
+import { getChannelVideos } from "../../store/slices/dashboardSlice";
+import { getSubscribedChannels } from "../../store/slices/subscriptionSlice";
 import { Link } from "react-router-dom";
-import { AvatarBanner, CoverImageBanner, VideoGrid } from "../index";
+import {
+  AvatarBanner,
+  CoverImageBanner,
+  Loader,
+  VideoGrid,
+  ToastContainer,
+} from "../index";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 
-const ChannelProfile = () => {
+const ChannelProfile = ({
+  channelDetails,
+  fetchChannelProfile,
+  toggleSubscription,
+}) => {
   const { username } = useParams();
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("videos");
-  const [channelDetails, setChannelDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [tweets, setTweets] = useState([]);
   const [subscribed, setSubscribed] = useState([]);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isReloading, setIsReloading] = useState(false);
   const { data: currentUserData } = useSelector((state) => state.user);
 
   const tabs = [
@@ -46,22 +51,6 @@ const ChannelProfile = () => {
     </div>
   );
 
-  const handleSubscriptionToggle = async () => {
-    try {
-      await dispatch(toggleSubscription(channelDetails._id)).unwrap();
-      setIsSubscribed(!isSubscribed);
-      setChannelDetails((prev) => ({
-        ...prev,
-        subscribersCount: prev.isSubscribed
-          ? prev.subscribersCount - 1
-          : prev.subscribersCount + 1,
-        isSubscribed: !prev.isSubscribed,
-      }));
-    } catch (error) {
-      console.error("Error toggling subscription:", error);
-    }
-  };
-
   const fetchTabContent = async (tabId) => {
     setLoading(true);
     try {
@@ -69,21 +58,23 @@ const ChannelProfile = () => {
         case "playlist":
           if (playlists.length === 0) {
             const response = await dispatch(
-              getUserPlaylists(username)
+              getUserPlaylists(channelDetails._id)
             ).unwrap();
             setPlaylists(response);
           }
           break;
         case "tweets":
           if (tweets.length === 0) {
-            const response = await dispatch(getUserTweets(username)).unwrap();
+            const response = await dispatch(
+              getUserTweets(channelDetails._id)
+            ).unwrap();
             setTweets(response);
           }
           break;
         case "subscriptions":
           if (subscribed.length === 0) {
             const response = await dispatch(
-              getSubscribedChannels(username)
+              getSubscribedChannels(channelDetails._id)
             ).unwrap();
             setSubscribed(response);
           }
@@ -92,20 +83,7 @@ const ChannelProfile = () => {
           break;
       }
     } catch (error) {
-      console.error("Error fetching content:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchChannelDetails = async (username) => {
-    setLoading(true);
-    try {
-      const response = await dispatch(getUserChannelProfile(username)).unwrap();
-      setChannelDetails(response);
-      setIsSubscribed(response.isSubscribed);
-    } catch (error) {
-      console.error("Error fetching channel details:", error);
+      toast.error("Error fetching content:", error.message);
     } finally {
       setLoading(false);
     }
@@ -118,20 +96,27 @@ const ChannelProfile = () => {
     }
   };
 
+  const handleSubscriptionToggle = async () => {
+    try {
+      await toggleSubscription();
+    } catch (error) {
+      toast.error("Error toggling subscription:", error);
+    }
+  };
+
   useEffect(() => {
-    setIsReloading(true);
+    setLoading(true);
     setPlaylists([]);
     setTweets([]);
     setSubscribed([]);
     setActiveTab("videos");
 
-    const initializeProfile = async () => {
-      await fetchChannelDetails(username);
-      setIsReloading(false);
-    };
+    if (channelDetails) setLoading(false);
+  }, [channelDetails]);
 
-    initializeProfile();
-  }, [username]);
+  if (!channelDetails) {
+    return <Loader />;
+  }
 
   const EmptyStateMessage = ({ message, submessage }) => (
     <div className="flex flex-col items-center justify-center w-full py-12">
@@ -279,11 +264,7 @@ const ChannelProfile = () => {
     );
 
   const renderContent = () => {
-    if (isReloading) {
-      return <LoadingIndicator />;
-    }
-
-    if (loading && activeTab !== "videos") {
+    if (loading) {
       return <LoadingIndicator />;
     }
 
@@ -299,14 +280,7 @@ const ChannelProfile = () => {
           {(() => {
             switch (activeTab) {
               case "videos":
-                return (
-                  <VideoGrid
-                    userId={channelDetails._id}
-                    limit={12}
-                    sortBy="createdAt"
-                    sortType="desc"
-                  />
-                );
+                return <VideoGrid fetchAction={getChannelVideos} limit={12} />;
               case "playlist":
                 return renderPlaylists();
               case "tweets":
@@ -324,10 +298,10 @@ const ChannelProfile = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      <ToastContainer />
       <div className="w-full h-48 md:h-64 relative">
         <CoverImageBanner coverPreview={channelDetails.coverImage} />
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative -mt-12 sm:-mt-16 mb-8">
           <div className="flex flex-col items-center md:flex-row md:items-end md:justify-between">

@@ -91,9 +91,9 @@ const getTweetById = asyncHandler(async (req, res) => {
 });
 
 const getUserTweets = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { userId } = req.params;
 
-  const user = await User.findOne({ username });
+  const user = await User.findById(userId).lean();
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -102,7 +102,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
   const tweets = await Tweet.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(user._id),
+        owner: new mongoose.Types.ObjectId(userId),
       },
     },
     {

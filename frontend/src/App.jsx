@@ -53,7 +53,13 @@ function App() {
   }, [dispatch, isAuthenticated]);
 
   if (healthCheckError) {
-    return <Error message={healthCheckError} />;
+    return (
+      <Error
+        message={healthCheckError}
+        showHomeButton={false}
+        details={"You can contact us at sidjain88tx@gmail.com."}
+      />
+    );
   }
 
   return (

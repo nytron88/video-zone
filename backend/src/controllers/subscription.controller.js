@@ -99,11 +99,9 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 });
 
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-  const { subscriberUsername } = req.params;
+  const { subscriberId } = req.params;
 
-  const subscriber = await User.findOne({
-    username: subscriberUsername,
-  }).lean();
+  const subscriber = await User.findById(subscriberId).lean();
 
   if (!subscriber) {
     throw new ApiError(404, `User not found with ID ${subscriberId}`);
@@ -112,7 +110,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
   const channels = await Subscription.aggregate([
     {
       $match: {
-        subscriber: new mongoose.Types.ObjectId(subscriber._id),
+        subscriber: new mongoose.Types.ObjectId(subscriberId),
       },
     },
     {

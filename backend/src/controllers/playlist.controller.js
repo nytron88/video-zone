@@ -21,13 +21,17 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(20, playlist, "Playlist created successfully"));
+    .json(new ApiResponse(200, playlist, "Playlist created successfully"));
 });
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { userId } = req.params;
 
-  const user = await User.findOne({ username });
+  if (!isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid user ID");
+  }
+
+  const user = await User.findById(userId).lean();
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -36,7 +40,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
   const playlists = await Playlist.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(user._id),
+        owner: new mongoose.Types.ObjectId(userId),
       },
     },
     {
@@ -223,11 +227,17 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid playlist ID");
   }
 
-  const playlist = await Playlist.findByIdAndDelete(playlistId);
+  const playlist = await Playlist.findById(playlistId);
 
   if (!playlist) {
     throw new ApiError(404, "Playlist not found");
   }
+
+  if (playlist.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this playlist");
+  }
+
+  await playlist.remove();
 
   return res
     .status(200)
@@ -251,13 +261,19 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   if (name) updateFields.name = name;
   if (description) updateFields.description = description;
 
-  const playlist = await Playlist.findByIdAndUpdate(playlistId, updateFields, {
-    new: true,
-  });
+  const playlist = await Playlist.findById(playlistId);
 
   if (!playlist) {
     throw new ApiError(404, "Playlist not found");
   }
+
+  if (playlist.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to update this playlist");
+  }
+
+  Object.assign(playlist, updateFields);
+
+  await playlist.save({ validateBeforeSave: false });
 
   return res
     .status(200)

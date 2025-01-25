@@ -3,6 +3,7 @@ import { getAllVideos } from "../../store/slices/videoSlice";
 import { ContentDisplay, VideoCard } from "../index";
 
 function VideoGrid({
+  fetchAction = getAllVideos,
   limit = 16,
   sortBy = "views",
   sortType = "desc",
