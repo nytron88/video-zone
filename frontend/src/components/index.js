@@ -33,6 +33,7 @@ import TweetDisplay from "./TweetDisplay/TweetDisplay";
 import EditTweet from "./EditTweet/EditTweet";
 import PlaylistDisplay from "./PlaylistDisplay/PlaylistDisplay";
 import DeleteConfirmDialog from "./Common/DeleteConfirmDialog";
+import SearchResults from "./SearchResults/SearchResults";
 
 export {
   Login,
@@ -70,4 +71,5 @@ export {
   EditTweet,
   PlaylistDisplay,
   DeleteConfirmDialog,
+  SearchResults,
 };

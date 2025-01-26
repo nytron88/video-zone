@@ -28,6 +28,7 @@ import {
   TweetDisplay,
   EditTweet,
   PlaylistDisplay,
+  SearchResults,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -159,6 +160,14 @@ const router = createBrowserRouter(
         element={
           <AuthLayout authentication>
             <PlaylistDisplay />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="search"
+        element={
+          <AuthLayout authentication>
+            <SearchResults />
           </AuthLayout>
         }
       />

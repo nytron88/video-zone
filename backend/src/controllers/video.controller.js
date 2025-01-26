@@ -377,7 +377,8 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Search query is required");
   }
 
-  if (type !== "all" && type !== "videos" && type !== "channels") {
+  const validTypes = ["all", "videos", "channels"];
+  if (!validTypes.includes(type)) {
     throw new ApiError(400, "Invalid search type");
   }
 
@@ -385,7 +386,8 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid page or limit value");
   }
 
-  if (!["score", "createdAt", "views"].includes(sortBy)) {
+  const validSortOptions = ["score", "createdAt", "views"];
+  if (!validSortOptions.includes(sortBy)) {
     throw new ApiError(400, "Invalid sort option");
   }
 
@@ -404,35 +406,25 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
             should: [
               {
                 autocomplete: {
-                  query: query,
+                  query,
                   path: "title",
                   score: { boost: { value: 3 } },
-                  fuzzy: {
-                    maxEdits: 2,
-                    prefixLength: 1,
-                  },
+                  fuzzy: { maxEdits: 2, prefixLength: 1 },
                 },
               },
               {
                 autocomplete: {
-                  query: query,
+                  query,
                   path: "description",
                   score: { boost: { value: 1 } },
-                  fuzzy: {
-                    maxEdits: 2,
-                    prefixLength: 1,
-                  },
+                  fuzzy: { maxEdits: 2, prefixLength: 1 },
                 },
               },
             ],
           },
         },
       },
-      {
-        $match: {
-          isPublished: true,
-        },
-      },
+      { $match: { isPublished: true } },
       {
         $lookup: {
           from: "users",
@@ -444,27 +436,48 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
       {
         $addFields: {
           owner: { $arrayElemAt: ["$owner", 0] },
-          score: { $meta: "searchScore" },
+        },
+      },
+      {
+        $group: {
+          _id: "$title",
+          count: { $sum: 1 },
+          docs: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $project: {
+          docs: 1,
+          count: 1,
+          uniquenessScore: {
+            $cond: { if: { $eq: ["$count", 1] }, then: 5, else: 1 },
+          },
+        },
+      },
+      { $unwind: "$docs" },
+      {
+        $addFields: {
+          "docs.uniquenessScore": "$uniquenessScore",
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$docs",
+        },
+      },
+      {
+        $addFields: {
+          boostedScore: { $add: ["$score", "$uniquenessScore"] },
         },
       },
       {
         $sort:
           sortBy === "score"
-            ? { score: -1 }
+            ? { boostedScore: -1 }
             : sortBy === "createdAt"
             ? { createdAt: -1 }
-            : { views: -1, score: -1 },
+            : { views: -1, boostedScore: -1 },
       },
-    ];
-
-    const videoCount = await Video.aggregate([
-      ...videoPipeline,
-      { $count: "total" },
-    ]);
-    const totalVideoResults = videoCount[0]?.total || 0;
-
-    const videoSearchResults = await Video.aggregate([
-      ...videoPipeline,
       { $skip: (pageNumber - 1) * limitNumber },
       { $limit: limitNumber },
       {
@@ -476,15 +489,28 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
           "owner.avatar": 1,
           createdAt: 1,
           views: 1,
-          score: 1,
+          boostedScore: 1,
         },
       },
+    ];
+
+    const totalVideos = await Video.aggregate([
+      { $search: videoPipeline[0].$search },
+      { $match: videoPipeline[1].$match },
+      {
+        $group: {
+          _id: "$title",
+          count: { $sum: 1 },
+        },
+      },
+      { $count: "total" },
     ]);
+    const videoSearchResults = await Video.aggregate(videoPipeline);
 
     videoResults = {
       results: videoSearchResults,
-      totalResults: totalVideoResults,
-      totalPages: Math.ceil(totalVideoResults / limitNumber),
+      totalResults: totalVideos[0]?.total || 0,
+      totalPages: Math.ceil((totalVideos[0]?.total || 0) / limitNumber),
     };
   }
 
@@ -497,7 +523,7 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
             should: [
               {
                 autocomplete: {
-                  query: query,
+                  query,
                   path: "username",
                   score: { boost: { value: 3 } },
                   fuzzy: { maxEdits: 2, prefixLength: 1 },
@@ -505,7 +531,7 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
               },
               {
                 autocomplete: {
-                  query: query,
+                  query,
                   path: "fullname",
                   score: { boost: { value: 1 } },
                   fuzzy: { maxEdits: 2, prefixLength: 1 },
@@ -533,9 +559,11 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
               else: false,
             },
           },
-          score: { $meta: "searchScore" },
         },
       },
+      { $sort: { [sortBy === "score" ? "score" : sortBy]: -1 } },
+      { $skip: (pageNumber - 1) * limitNumber },
+      { $limit: limitNumber },
       {
         $project: {
           username: 1,
@@ -546,37 +574,18 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
           score: 1,
         },
       },
-      {
-        $sort: { score: -1 },
-      },
     ];
 
-    const channelCount = await User.aggregate([
-      ...channelsPipeline,
+    const totalChannels = await User.aggregate([
+      { $search: channelsPipeline[0].$search },
       { $count: "total" },
     ]);
-    const totalChannelResults = channelCount[0]?.total || 0;
-
-    const channelSearchResults = await User.aggregate([
-      ...channelsPipeline,
-      { $skip: (pageNumber - 1) * limitNumber },
-      { $limit: limitNumber },
-      {
-        $project: {
-          username: 1,
-          avatar: 1,
-          subscribersCount: 1,
-          isSubscribed: 1,
-          fullName: 1,
-          score: 1,
-        },
-      },
-    ]);
+    const channelSearchResults = await User.aggregate(channelsPipeline);
 
     channelResults = {
       results: channelSearchResults,
-      totalResults: totalChannelResults,
-      totalPages: Math.ceil(totalChannelResults / limitNumber),
+      totalResults: totalChannels[0]?.total || 0,
+      totalPages: Math.ceil((totalChannels[0]?.total || 0) / limitNumber),
     };
   }
 
@@ -586,28 +595,24 @@ const searchVideosAndChannels = asyncHandler(async (req, res) => {
     channelResults.totalPages
   );
 
-  let statusCode = 200;
-  let responseData = {
+  const responseData = {
     videos: videoResults.results.length > 0 ? videoResults.results : null,
     totalVideos: videoResults.totalResults,
     channels: channelResults.results.length > 0 ? channelResults.results : null,
     totalChannels: channelResults.totalResults,
     pagination: {
       currentPage: pageNumber,
-      totalPages: totalPages,
-      totalResults: totalResults,
+      totalPages,
+      totalResults,
     },
   };
 
-  let message = "Results found";
-  if (totalResults === 0) {
-    message = "No results found for the given query";
-    responseData = null;
-    statusCode = 204;
-  }
+  const message =
+    totalResults > 0 ? "Results found" : "No results found for the given query";
+  const statusCode = totalResults > 0 ? 200 : 204;
 
   return res
-    .status(200)
+    .status(statusCode)
     .json(new ApiResponse(statusCode, responseData, message));
 });
 

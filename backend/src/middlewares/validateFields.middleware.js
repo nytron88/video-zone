@@ -1,4 +1,3 @@
-import fs from "fs/promises";
 import { validationResult } from "express-validator";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";

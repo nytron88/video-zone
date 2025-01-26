@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { searchVideosAndChannels } from "../../store/slices/videoSlice";
 import { Search } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = ({
   value,
   onChange,
   onSearchIconClick,
   placeholder,
-  onResultClick,
   isMobileSearch,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +16,15 @@ const SearchBar = ({
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const closeSearch = () => {
+    setIsOpen(false);
+    setResults([]);
+    if (isMobileSearch && onSearchIconClick) {
+      onSearchIconClick();
+    }
+  };
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
@@ -33,19 +41,24 @@ const SearchBar = ({
             })
           ).unwrap();
 
-          setResults([
-            ...(response.videos || []).map((video) => ({
+          const combinedResults = [
+            ...(response?.videos || []).map((video) => ({
               type: "video",
               id: video._id,
               label: video.title,
-              owner: video.owner.username,
             })),
-            ...(response.channels || []).map((channel) => ({
+            ...(response?.channels || []).map((channel) => ({
               type: "channel",
               id: channel._id,
               label: channel.username,
             })),
-          ]);
+          ];
+
+          const uniqueResults = Array.from(
+            new Map(combinedResults.map((item) => [item.label, item])).values()
+          );
+
+          setResults(uniqueResults);
           setIsOpen(true);
         } catch (error) {
           setResults([]);
@@ -77,38 +90,35 @@ const SearchBar = ({
     }
   }, [isMobileSearch]);
 
-  const handleResultClick = (result) => {
-    onResultClick(result);
-    onChange({ target: { value: result.label } });
-    setIsOpen(false);
+  const handleResultClick = (query) => {
+    closeSearch();
+    navigate(`/search?query=${encodeURIComponent(query)}`);
   };
+
+  const handleEnterKey = (event) => {
+    if (event.key === "Enter" && value.trim().length > 0) {
+      closeSearch();
+      navigate(`/search?query=${encodeURIComponent(value.trim())}`);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      closeSearch();
+    };
+  }, [navigate]);
 
   const ResultsList = () => (
     <>
       {results.map((result, index) => (
-        <Link
+        <div
           key={index}
-          to={
-            result.type === "video"
-              ? `/video/${result.id}`
-              : `/channel/${result.label}`
-          }
-          onClick={() => handleResultClick(result)}
+          onClick={() => handleResultClick(result.label)}
           className="px-4 py-3 text-gray-300 hover:bg-gray-800 cursor-pointer flex items-center gap-3 transition-colors"
         >
           <Search className="w-4 h-4 text-gray-400" />
-          <div className="flex flex-col">
-            <span className="font-medium">
-              {result.label}
-              {result.type === "video" && (
-                <span className="text-sm text-gray-400 ml-2">
-                  By {result.owner}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-gray-500">({result.type})</span>
-          </div>
-        </Link>
+          <span className="font-medium">{result.label}</span>
+        </div>
       ))}
     </>
   );
@@ -120,6 +130,7 @@ const SearchBar = ({
           type="text"
           value={value}
           onChange={onChange}
+          onKeyDown={handleEnterKey}
           placeholder={placeholder || "Search"}
           className="w-full bg-gray-900/50 border border-gray-700 rounded-lg py-2 pl-10 pr-4 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400"
           autoFocus={isMobileSearch}

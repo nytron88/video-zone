@@ -87,11 +87,9 @@ function PlaylistDisplay() {
 
   const handleRemoveVideo = async (videoId) => {
     try {
-      const response = await dispatch(
+      await dispatch(
         removeVideoFromPlaylist({ playlistId: playlist._id, videoId })
       ).unwrap();
-
-      console.log(playlist);
 
       setPlaylist((prev) => {
         return {
