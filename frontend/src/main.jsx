@@ -29,6 +29,7 @@ import {
   EditTweet,
   PlaylistDisplay,
   SearchResults,
+  ErrorPage,
 } from "./pages";
 
 const router = createBrowserRouter(
@@ -171,6 +172,7 @@ const router = createBrowserRouter(
           </AuthLayout>
         }
       />
+      <Route path="*" element={<ErrorPage />} />
     </Route>
   )
 );

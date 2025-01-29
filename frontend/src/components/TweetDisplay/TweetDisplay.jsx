@@ -7,7 +7,7 @@ import {
   addTweetComment,
 } from "../../store/slices/commentSlice";
 import { toggleTweetLike } from "../../store/slices/likeSlice";
-import { CommentList, Loader } from "../index";
+import { CommentList, Error, Loader } from "../index";
 import { UserCircle, Clock, ThumbsUp, Trash2, Edit } from "lucide-react";
 
 function TweetDisplay() {
@@ -62,9 +62,10 @@ function TweetDisplay() {
 
   if (!tweet || error) {
     return (
-      <div className="text-center text-gray-300 py-10">
-        <p>Tweet not found.</p>
-      </div>
+      <Error
+        message={error || "Tweet not found."}
+        details="Most likely the tweet doesn't exist"
+      />
     );
   }
 

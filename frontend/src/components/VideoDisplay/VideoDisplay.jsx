@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getVideoById } from "../../store/slices/videoSlice";
-import { CommentList } from "../index";
+import { CommentList, Error, Loader } from "../index";
 import VideoDetails from "./VideoDetails";
 import VideoPlayer from "./VideoPlayer";
 import {
   getVideoComments,
   addVideoComment,
 } from "../../store/slices/commentSlice";
-import { Loader } from "../index";
 
 function VideoDisplay() {
   const { videoId } = useParams();
@@ -55,7 +54,12 @@ function VideoDisplay() {
   if (isLoading) return <Loader />;
 
   if (!video || error) {
-    return <div className="text-white">Video not found.</div>;
+    return (
+      <Error
+        message={error || "Video not found."}
+        details="Most likely the video doesn't exist"
+      />
+    );
   }
 
   return (

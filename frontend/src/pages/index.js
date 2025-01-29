@@ -16,6 +16,7 @@ import TweetDisplay from "./TweetDisplay";
 import EditTweet from "./EditTweet";
 import PlaylistDisplay from "./PlaylistDisplay";
 import SearchResults from "./SearchResults";
+import ErrorPage from "./ErrorPage";
 
 export {
   Home,
@@ -36,4 +37,5 @@ export {
   EditTweet,
   PlaylistDisplay,
   SearchResults,
+  ErrorPage,
 };
