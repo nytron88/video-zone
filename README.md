@@ -175,7 +175,5 @@ Your app should now be running on:
 
 ## 🎥 Screenshots / Demo
 
-![alt text](demo-1.png)
-![alt text](demo-2.png)
-![alt text](demo-3.png)
-![alt text](demo-4.png)
+![Demo 1](demo-1.png)
+![Demo 2](demo-2.png)
