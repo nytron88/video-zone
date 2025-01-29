@@ -278,7 +278,13 @@ const ChannelProfile = ({
           {(() => {
             switch (activeTab) {
               case "videos":
-                return <VideoGrid fetchAction={getChannelVideos} limit={12} />;
+                return (
+                  <VideoGrid
+                    fetchAction={getChannelVideos}
+                    limit={12}
+                    userId={channelDetails._id}
+                  />
+                );
               case "playlist":
                 return renderPlaylists();
               case "tweets":

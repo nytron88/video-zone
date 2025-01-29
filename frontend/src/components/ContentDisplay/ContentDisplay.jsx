@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
 import { throttle } from "lodash";
@@ -28,8 +28,20 @@ function ContentDisplay({
     );
   }, []);
 
+  const latestState = useRef({
+    page,
+    hasMore,
+    loading,
+  });
+
+  useEffect(() => {
+    latestState.current = { page, hasMore, loading };
+  }, [page, hasMore, loading]);
+
   const fetchItems = useCallback(
     throttle(async () => {
+      const { page, hasMore, loading } = latestState.current;
+
       if (loading || !hasMore) return;
 
       setLoading(true);
@@ -80,13 +92,13 @@ function ContentDisplay({
         setInitialLoading(false);
       }
     }, 1000),
-    [dispatch, page, hasMore, loading, seenIds, fetchAction, additionalParams]
+    []
   );
 
   useEffect(() => {
     fetchItems();
     return () => fetchItems.cancel();
-  }, []);
+  }, [fetchItems]);
 
   const LoadingIndicator = () => (
     <div className="flex justify-center items-center w-full py-4 col-span-full">
@@ -113,7 +125,11 @@ function ContentDisplay({
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div
+      className={`bg-black text-white p-6 ${
+        initialLoading || items.length > limit / 2 ? "min-h-screen" : "h-auto"
+      }`}
+    >
       {initialLoading ? (
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
