@@ -170,22 +170,21 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
   };
 
   return (
-    <div className="bg-black border border-gray-700/50 rounded-xl p-4 shadow-lg">
+    <div className="bg-black border border-gray-700/50 rounded-xl p-2 sm:p-4 shadow-lg w-full max-w-4xl mx-auto">
       <DeleteConfirmDialog
         deleteItemId={deleteCommentId}
         setDeleteItemId={setDeleteCommentId}
         handleDeleteConfirm={handleDeleteConfirm}
       />
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl text-white font-bold">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl text-white font-bold">
           {totalCommentsRef.current} Comments
         </h2>
-        <div className="flex items-center gap-4">
-          {" "}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-gray-900 text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-gray-900 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base w-full sm:w-auto"
           >
             <option value="top">Top comments</option>
             <option value="newest">Newest first</option>
@@ -193,7 +192,7 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-sm sm:text-base w-full sm:w-auto"
           >
             <RefreshCcw
               className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
@@ -203,17 +202,16 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
         </div>
       </div>
       <ToastContainer />
-      <div className="mb-6">
-        <input
-          type="text"
+      <div className="mb-4 sm:mb-6">
+        <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
-          className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+          className="w-full p-3 bg-gray-900 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white min-h-[80px] text-sm sm:text-base resize-y"
         />
         <button
           onClick={handleAddComment}
-          className="mt-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-300"
+          className="mt-2 px-4 sm:px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-300 text-sm sm:text-base w-full sm:w-auto"
         >
           Post Comment
         </button>
@@ -230,8 +228,9 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
           next={handleLoadMore}
           hasMore={hasMore}
           loader={<LoadingIndicator />}
+          className="space-y-2 sm:space-y-4"
           endMessage={
-            <p className="text-center text-gray-400 py-6">
+            <p className="text-center text-gray-400 py-4 sm:py-6 text-sm sm:text-base">
               {comments.length === 0
                 ? "Be the first to comment!"
                 : "No more comments to load"}
@@ -241,7 +240,7 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
           {comments.map((comment) => (
             <div
               key={comment._id}
-              className="flex items-start gap-2 p-4 border-b border-gray-700/50 hover:bg-gray-900 transition-colors duration-200"
+              className="flex flex-col sm:flex-row items-start gap-2 p-3 sm:p-4 border-b border-gray-700/50 hover:bg-gray-900 transition-colors duration-200"
             >
               <Link
                 to={`/channel/${comment.owner.username}`}
@@ -250,19 +249,19 @@ function CommentList({ identifier, getCommentsAction, addCommentAction }) {
                 <img
                   src={comment.owner.avatar || "/placeholder.svg"}
                   alt={comment.owner.fullname}
-                  className="w-10 h-10 rounded-full object-cover group-hover:opacity-90 transition-opacity duration-200"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover group-hover:opacity-90 transition-opacity duration-200"
                 />
               </Link>
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
+              <div className="flex-1 w-full">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
                   <Link
                     to={`/channel/${comment.owner.username}`}
                     className="group flex flex-col hover:bg-gray-800 p-2 rounded-lg transition-all duration-200"
                   >
-                    <p className="font-bold text-white group-hover:text-blue-400 transition-all duration-200">
+                    <p className="font-bold text-white group-hover:text-blue-400 transition-all duration-200 text-sm sm:text-base">
                       {comment.owner.fullname}
                     </p>
-                    <p className="text-sm text-gray-400 group-hover:text-gray-200 transition-all duration-200">
+                    <p className="text-xs sm:text-sm text-gray-400 group-hover:text-gray-200 transition-all duration-200">
                       @{comment.owner.username}
                     </p>
                   </Link>
