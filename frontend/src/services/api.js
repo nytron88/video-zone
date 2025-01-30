@@ -1,10 +1,9 @@
 import axios from "axios";
-import config from "../config/config";
 import { store } from "../store/store";
 import { refreshToken } from "../store/slices/authSlice";
 
 const apiClient = axios.create({
-  baseURL: `${config.apiBaseUrl}/api/v1`,
+  baseURL: "/api/v1",
   withCredentials: true,
 });
 
