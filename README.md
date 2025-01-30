@@ -171,7 +171,7 @@ npm run dev
 Your app should now be running on:
 
 - **Frontend**: `https://videozone88.vercel.app`
-- **Backend**: `https://video-zone-backend-bbdfa2d15eb7.herokuapp.com` (Can't be accessed directly due to CORS restrictions)
+- **Backend**: `https://video-zone-backend-98ca63636751.herokuapp.com` (Can't be accessed directly due to CORS restrictions)
 
 ## 🎥 Screenshots / Demo
 
