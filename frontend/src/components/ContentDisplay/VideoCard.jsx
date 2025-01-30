@@ -45,7 +45,7 @@ const VideoCard = memo(({ video, onImageLoad }) => (
         </div>
         <div className="flex items-center space-x-2 group/owner">
           <Link
-            to={`/channel/${video.owner._id}`}
+            to={`/channel/${video.owner.username}`}
             className="relative w-8 h-8 rounded-full bg-gray-800 overflow-hidden ring-2 ring-transparent group-hover/owner:ring-cyan-400 transition-all"
           >
             <img
