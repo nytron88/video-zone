@@ -6,11 +6,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (resource) => {
+const uploadOnCloudinary = async (resource, folder) => {
   try {
     const base64String = `data:image/png;base64,${resource.toString("base64")}`;
     const response = await cloudinary.uploader.upload(base64String, {
       resource_type: "auto",
+      folder: folder?.trim() || "default",
     });
     return response;
   } catch (error) {

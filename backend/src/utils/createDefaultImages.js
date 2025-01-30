@@ -22,7 +22,7 @@ async function generateAvatar(name, size = 100) {
   ctx.fillText(initials, size / 2, size / 2);
 
   const buffer = canvas.toBuffer();
-  const uploadedFile = await uploadOnCloudinary(buffer);
+  const uploadedFile = await uploadOnCloudinary(buffer, "avatars");
 
   return uploadedFile;
 }
@@ -40,7 +40,7 @@ async function generateCoverImage(width = 1200, height = 300) {
   ctx.fillRect(0, 0, width, height);
 
   const buffer = canvas.toBuffer();
-  const uploadedFile = await uploadOnCloudinary(buffer);
+  const uploadedFile = await uploadOnCloudinary(buffer, "coverImages");
 
   return uploadedFile;
 }
