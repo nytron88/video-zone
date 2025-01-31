@@ -1,6 +1,6 @@
 # Video Zone
 
-## 📺 Overview
+## 🎥 Overview
 
 Video Zone is a full-stack video-sharing platform that allows users to upload, share, and interact with videos. Users can create accounts, comment on videos, and manage their playlists. The application is built using the **MERN** stack, featuring a robust backend and a dynamic frontend.
 
@@ -53,7 +53,7 @@ Video Zone is a full-stack video-sharing platform that allows users to upload, s
 
 - Implemented **infinite scrolling** for seamless content browsing.
 
-## 🛠️ Tech Stack
+## 🤝 Tech Stack
 
 ### **Frontend**
 
@@ -87,13 +87,24 @@ The backend is structured into multiple modules:
 - **Middlewares**: Authentication, error handling, and request validation.
 - **Utils**: Helper functions for API responses, error handling, and Cloudinary integration.
 
-### **Frontend Overview**
+### **🔗 Advanced MongoDB Schema: High-Complexity NoSQL Data Model**
 
-The frontend is structured with reusable **React components** and **Redux slices** for state management:
+The database is designed for **scalability and efficiency**, utilizing **MongoDB with optimized relationships** between collections. The schema includes:
 
-- **Components**: Authentication forms, video players, dashboards, and more.
-- **Pages**: User profiles, playlists, video uploads, and search results.
-- **Store**: Manages global state, including authentication, comments, playlists, and video data.
+- **Users**: Authentication and profile management
+- **Videos**: Video storage with metadata
+- **Comments & Likes**: Engagement tracking
+- **Playlists**: Personalized video collections
+- **Watch History**: Tracks user video interactions
+- **Subscriptions**: User-to-user follow system
+
+This schema ensures **high-performance querying**, leveraging **aggregation pipelines, indexing, and denormalized references** where necessary.
+
+### **🎨 Database Schema Diagram**
+
+The following **ERD (Entity-Relationship Diagram)** visually represents the relationships between collections in the MongoDB database:
+
+![VideoZone Database Schema](diagram.png)
 
 ## ⚡ Installation & Setup
 
@@ -124,7 +135,7 @@ npm install
 
 Create a **.env** file in both the frontend and backend directories with the following variables:
 
-#### **Backend **``** Configuration**
+#### **Backend Configuration**
 
 ```ini
 # Server Configuration
@@ -146,7 +157,7 @@ CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-#### **Frontend **``** Configuration**
+#### **Frontend Configuration**
 
 ```ini
 VITE_SERVER_BASE_URL=http://localhost:3000
