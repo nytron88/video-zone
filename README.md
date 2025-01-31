@@ -1,17 +1,28 @@
-# Video Zone
+## 📑 Index
 
-## 🎥 Overview
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Tech Stack](#tech-stack)
+4. [Project Structure](#project-structure)
+   - [Backend Overview](#backend-overview)
+   - [Advanced MongoDB Schema](#advanced-mongodb-schema)
+   - [Database Schema Diagram](#database-schema-diagram)
+5. [Installation & Setup](#installation--setup)
+6. [Running the Application](#running-the-application)
+7. [Screenshots / Demo](#screenshots--demo)
+
+## <a id="overview"></a>🎥 Overview
 
 Video Zone is a full-stack video-sharing platform that allows users to upload, share, and interact with videos. Users can create accounts, comment on videos, and manage their playlists. The application is built using the **MERN** stack, featuring a robust backend and a dynamic frontend.
 
-## 🚀 Features
+## <a id="features"></a>🚀 Features
 
-### **🔹 Full-Stack Development with Custom Backend**
+### Full-Stack Development with Custom Backend
 
 - Built using the **MERN stack** with a fully custom backend.
 - Backend optimized with **MongoDB aggregation pipelines** for handling complex data operations efficiently.
 
-### **📊 Advanced Database Querying**
+### Advanced Database Querying
 
 - Leveraged **MongoDB aggregation pipelines** for tasks such as:
   - Fetching video details
@@ -19,65 +30,65 @@ Video Zone is a full-stack video-sharing platform that allows users to upload, s
   - Tracking user watch history
 - Demonstrates **proficiency in MongoDB** and optimized database structuring.
 
-### **☁️ Efficient Cloud Uploads**
+### Efficient Cloud Uploads
 
 - Implemented **signed URL uploads** via **Cloudinary**, ensuring efficient file handling without overloading the backend.
 
-### **🛡️ Secure Authentication**
+### Secure Authentication
 
 - Utilized **JWT (JSON Web Token)** for secure, stateless authentication.
 
-### **🎥 Video Management**
+### Video Management
 
 - Users can **upload, publish, update, and delete** videos.
 - Videos are **streamed seamlessly**, ensuring smooth playback.
 
-### **💬 Commenting System**
+### Commenting System
 
 - Users can **comment** on videos for increased engagement.
 
-### **📂 Playlist Management**
+### Playlist Management
 
 - Users can **create and manage playlists** to organize their favorite videos.
 
-### **🔎 Advanced Search Functionality**
+### Advanced Search Functionality
 
 - Utilized **MongoDB Atlas Search** to index and query videos efficiently.
 - Supports **debounced and throttled searches** for a smooth UX.
 
-### **📱 Responsive Design**
+### Responsive Design
 
 - Designed with **Tailwind CSS**, ensuring a modern and responsive UI across desktop & mobile.
 
-### **🌀 Infinite Scrolling**
+### Infinite Scrolling
 
 - Implemented **infinite scrolling** for seamless content browsing.
 
-## 🤝 Tech Stack
+## <a id="tech-stack"></a>🛠️ Tech Stack
 
-### **Frontend**
+### Frontend
 
 - **React** + **Redux Toolkit** (for state management)
 - **Tailwind CSS** (for styling)
 
-### **Backend**
+### Backend
 
 - **Node.js** + **Express.js**
 - **MongoDB** (with aggregation pipelines & indexing via MongoDB Atlas)
 - **Cloudinary** (for secure video uploads)
 
-### **Authentication**
+### Authentication
 
 - **JWT Tokens** (for stateless, secure authentication)
 
-### **Hosting**
+### Hosting
 
 - **Backend**: Hosted on **Heroku**
 - **Frontend**: Hosted on **Vercel**
 
-## 📂 Project Structure
+## <a id="project-structure"></a>📂 Project Structure
 
-### **Backend Overview**
+### <a id="backend-overview"></a>Backend Overview
 
 The backend is structured into multiple modules:
 
@@ -87,7 +98,7 @@ The backend is structured into multiple modules:
 - **Middlewares**: Authentication, error handling, and request validation.
 - **Utils**: Helper functions for API responses, error handling, and Cloudinary integration.
 
-### **🔗 Advanced MongoDB Schema: High-Complexity NoSQL Data Model**
+### <a id="advanced-mongodb-schema"></a>🔗 Advanced MongoDB Schema: High-Complexity NoSQL Data Model
 
 The database is designed for **scalability and efficiency**, utilizing **MongoDB with optimized relationships** between collections. The schema includes:
 
@@ -100,42 +111,42 @@ The database is designed for **scalability and efficiency**, utilizing **MongoDB
 
 This schema ensures **high-performance querying**, leveraging **aggregation pipelines, indexing, and denormalized references** where necessary.
 
-### **🎨 Database Schema Diagram**
+### <a id="database-schema-diagram"></a>🗺️ Database Schema Diagram
 
 The following **ERD (Entity-Relationship Diagram)** visually represents the relationships between collections in the MongoDB database:
 
 ![VideoZone Database Schema](diagram.png)
 
-## ⚡ Installation & Setup
+## <a id="installation--setup"></a>⚡ Installation & Setup
 
-### **1️⃣ Clone the Repository**
+### 1️⃣ Clone the Repository
 
 ```sh
 git clone https://github.com/your-username/video-zone.git
 cd video-zone
 ```
 
-### **2️⃣ Install Dependencies**
+### 2️⃣ Install Dependencies
 
-#### **Backend**
+#### Backend
 
 ```sh
 cd backend
 npm install
 ```
 
-#### **Frontend**
+#### Frontend
 
 ```sh
 cd frontend
 npm install
 ```
 
-### **3️⃣ Environment Variables Configuration**
+### 3️⃣ Environment Variables Configuration
 
 Create a **.env** file in both the frontend and backend directories with the following variables:
 
-#### **Backend Configuration**
+#### Backend Configuration
 
 ```ini
 # Server Configuration
@@ -157,22 +168,16 @@ CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-#### **Frontend Configuration**
+## <a id="running-the-application"></a>🔧 Running the Application
 
-```ini
-VITE_SERVER_BASE_URL=http://localhost:3000
-```
-
-## 🔧 Running the Application
-
-### **Backend**
+### Backend
 
 ```sh
 cd backend
 npm run dev
 ```
 
-### **Frontend**
+### Frontend
 
 ```sh
 cd frontend
@@ -184,7 +189,7 @@ Your app should now be running on:
 - **Frontend**: `https://videozone88.vercel.app`
 - **Backend**: `https://video-zone-backend-98ca63636751.herokuapp.com` (Can't be accessed directly due to CORS restrictions)
 
-## 🎥 Screenshots / Demo
+## <a id="screenshots--demo"></a>🎥 Screenshots / Demo
 
 ![Demo 1](demo-1.png)
 ![Demo 2](demo-2.png)
