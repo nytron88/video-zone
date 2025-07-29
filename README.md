@@ -83,8 +83,12 @@ Video Zone is a full-stack video-sharing platform that allows users to upload, s
 
 ### Hosting
 
-- **Backend**: Hosted on **Heroku**
-- **Frontend**: Hosted on **Vercel**
+- **Infrastructure**: AWS VPC with public and private subnets across multiple availability zones
+- **Backend**: Deployed in private subnet with NAT Gateway for internet connectivity
+- **Reverse Proxy**: Hardened Nginx server in public subnet routing traffic to backend
+- **Frontend**: Static assets served via S3 and CloudFront CDN
+- **Security**: Header-based API authentication with CORS protection and rate limiting via Nginx
+- **Frontend URL**: https://d32ufchmjrnj28.cloudfront.net
 
 ## <a id="project-structure"></a>📂 Project Structure
 

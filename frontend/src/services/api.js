@@ -3,7 +3,7 @@ import { store } from "../store/store";
 import { refreshToken } from "../store/slices/authSlice";
 
 const apiClient = axios.create({
-  baseURL: "/api/v1",
+  baseURL: `${import.meta.env.VITE_SERVER_BASE_URL}/api/v1`,
   withCredentials: true,
 });
 

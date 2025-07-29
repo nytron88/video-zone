@@ -1,9 +1,0 @@
-{
-    "rewrites": [
-      {
-        "source": "/api/:path*",
-        "destination": "https://video-zone-backend-98ca63636751.herokuapp.com/api/:path*"
-      }
-    ]
-  }
-  
