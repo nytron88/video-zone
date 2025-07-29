@@ -1,4 +1,4 @@
-## 📑 Index
+## Index
 
 1. [Overview](#overview)
 2. [Features](#features)
@@ -11,11 +11,11 @@
 6. [Running the Application](#running-the-application)
 7. [Screenshots / Demo](#screenshots--demo)
 
-## <a id="overview"></a>🎥 Overview
+## <a id="overview"></a>Overview
 
 Video Zone is a full-stack video-sharing platform that allows users to upload, share, and interact with videos. Users can create accounts, comment on videos, and manage their playlists. The application is built using the **MERN** stack, featuring a robust backend and a dynamic frontend.
 
-## <a id="features"></a>🚀 Features
+## <a id="features"></a>Features
 
 ### Full-Stack Development with Custom Backend
 
@@ -64,7 +64,7 @@ Video Zone is a full-stack video-sharing platform that allows users to upload, s
 
 - Implemented **infinite scrolling** for seamless content browsing.
 
-## <a id="tech-stack"></a>🛠️ Tech Stack
+## <a id="tech-stack"></a>Tech Stack
 
 ### Frontend
 
@@ -90,7 +90,7 @@ Video Zone is a full-stack video-sharing platform that allows users to upload, s
 - **Security**: Header-based API authentication with CORS protection and rate limiting via Nginx
 - **Frontend URL**: https://d32ufchmjrnj28.cloudfront.net
 
-## <a id="project-structure"></a>📂 Project Structure
+## <a id="project-structure"></a>Project Structure
 
 ### <a id="backend-overview"></a>Backend Overview
 
@@ -102,7 +102,7 @@ The backend is structured into multiple modules:
 - **Middlewares**: Authentication, error handling, and request validation.
 - **Utils**: Helper functions for API responses, error handling, and Cloudinary integration.
 
-### <a id="advanced-mongodb-schema"></a>🔗 Advanced MongoDB Schema: High-Complexity NoSQL Data Model
+### <a id="advanced-mongodb-schema"></a>Advanced MongoDB Schema: High-Complexity NoSQL Data Model
 
 The database is designed for **scalability and efficiency**, utilizing **MongoDB with optimized relationships** between collections. The schema includes:
 
@@ -115,22 +115,22 @@ The database is designed for **scalability and efficiency**, utilizing **MongoDB
 
 This schema ensures **high-performance querying**, leveraging **aggregation pipelines, indexing, and denormalized references** where necessary.
 
-### <a id="database-schema-diagram"></a>🗺️ Database Schema Diagram
+### <a id="database-schema-diagram"></a>Database Schema Diagram
 
 The following **ERD (Entity-Relationship Diagram)** visually represents the relationships between collections in the MongoDB database:
 
 ![VideoZone Database Schema](diagram.png)
 
-## <a id="installation--setup"></a>⚡ Installation & Setup
+## <a id="installation--setup"></a>Installation & Setup
 
-### 1️⃣ Clone the Repository
+### Clone the Repository
 
 ```sh
 git clone https://github.com/your-username/video-zone.git
 cd video-zone
 ```
 
-### 2️⃣ Install Dependencies
+### Install Dependencies
 
 #### Backend
 
@@ -146,7 +146,7 @@ cd frontend
 npm install
 ```
 
-### 3️⃣ Environment Variables Configuration
+### Environment Variables Configuration
 
 Create a **.env** file in both the frontend and backend directories with the following variables:
 
@@ -172,7 +172,7 @@ CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-## <a id="running-the-application"></a>🔧 Running the Application
+## <a id="running-the-application"></a>Running the Application
 
 ### Backend
 
@@ -193,7 +193,7 @@ Your app is now running on:
 - **Frontend**: `https://d32ufchmjrnj28.cloudfront.net`
 - **Backend**: Deployed in private subnet, accessible via Nginx reverse proxy (not directly accessible for security)
 
-## <a id="screenshots--demo"></a>🎥 Screenshots / Demo
+## <a id="screenshots--demo"></a>Screenshots / Demo
 
 ![Demo 1](demo-1.png)
 ![Demo 2](demo-2.png)
