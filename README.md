@@ -188,10 +188,10 @@ cd frontend
 npm run dev
 ```
 
-Your app should now be running on:
+Your app is now running on:
 
-- **Frontend**: `https://videozone88.vercel.app`
-- **Backend**: `https://video-zone-backend-98ca63636751.herokuapp.com` (Can't be accessed directly due to CORS restrictions)
+- **Frontend**: `https://d32ufchmjrnj28.cloudfront.net`
+- **Backend**: Deployed in private subnet, accessible via Nginx reverse proxy (not directly accessible for security)
 
 ## <a id="screenshots--demo"></a>🎥 Screenshots / Demo
 
